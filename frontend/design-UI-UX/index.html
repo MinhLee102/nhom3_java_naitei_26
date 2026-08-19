@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FinTrack Pro — UI/UX Design System & Component Gallery</title>
-  <meta name="description" content="Complete Design Gallery for Expense Management System. Explore 27 screens, 3 layout templates, and 10 modular components built for Next.js, Tailwind CSS and Spring Boot REST API.">
+  <meta name="description" content="Complete Design Gallery for Expense Management System. Explore 34 screens, 3 layout templates, and 10 modular components built for Next.js, Tailwind CSS and Spring Boot REST API.">
   
   <!-- Google Fonts: Inter & JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -599,15 +599,15 @@
       <div class="nav-stats">
         <div class="stat-pill">
           <span class="material-symbols-outlined" style="font-size: 16px; color: var(--primary);">grid_view</span>
-          <span>Total: <strong>40</strong> assets</span>
+          <span>Total: <strong>47</strong> assets</span>
         </div>
         <div class="stat-pill">
           <span class="material-symbols-outlined" style="font-size: 16px; color: #1d4ed8;">person</span>
-          <span>User: <strong>13</strong></span>
+          <span>User: <strong>15</strong></span>
         </div>
         <div class="stat-pill">
           <span class="material-symbols-outlined" style="font-size: 16px; color: #9d174d;">admin_panel_settings</span>
-          <span>Admin: <strong>14</strong></span>
+          <span>Admin: <strong>19</strong></span>
         </div>
         <div class="stat-pill">
           <span class="material-symbols-outlined" style="font-size: 16px; color: #15803d;">view_quilt</span>
@@ -644,7 +644,7 @@
         </span>
         <span class="badge badge-green">
           <span class="material-symbols-outlined" style="font-size: 14px;">check_circle</span>
-          40 UI Assets Ready
+          47 UI Assets Ready
         </span>
       </div>
 
@@ -659,8 +659,8 @@
             <span class="material-symbols-outlined">person</span>
           </div>
           <div>
-            <div class="highlight-title">User Experience (13 Screens)</div>
-            <div class="highlight-text">Dashboard with Category Pie Chart, Expense & Income CRUD, Categories, Budgets, and Reports.</div>
+            <div class="highlight-title">User Experience (15 Screens)</div>
+            <div class="highlight-text">Dashboard with Category Pie Chart, Expense & Income CRUD, Categories & Delete Modal, Budgets & Delete Modal, and Reports.</div>
           </div>
         </div>
 
@@ -669,8 +669,8 @@
             <span class="material-symbols-outlined">admin_panel_settings</span>
           </div>
           <div>
-            <div class="highlight-title">Admin Management (14 Screens)</div>
-            <div class="highlight-text">User CRUD + Delete Modal, Global Categories, Budget Templates, System Expenses/Incomes, Logs & CSV Tools.</div>
+            <div class="highlight-title">Admin Management (19 Screens)</div>
+            <div class="highlight-text">User CRUD + Delete Modal, Global Categories + Delete Modal, Budget Templates + Delete Modal, System Expenses/Incomes + Delete Modals, Activity Logs + Purge Modal, and CSV Tools.</div>
           </div>
         </div>
 
@@ -702,24 +702,24 @@
         <!-- Search Input -->
         <div class="search-box">
           <span class="material-symbols-outlined search-icon">search</span>
-          <input type="text" id="search-input" class="search-input" placeholder="Search by ID, name, or keyword (e.g. U01, Button, Chart)..." autocomplete="off">
+          <input type="text" id="search-input" class="search-input" placeholder="Search by ID, name, or keyword (e.g. U09, Delete, Budget)..." autocomplete="off">
         </div>
 
         <!-- Filter Tabs -->
         <div class="filter-tabs">
           <button class="tab-btn active" data-filter="all" onclick="filterRole('all', this)">
             <span>All Assets</span>
-            <span class="tab-count" id="count-all">40</span>
+            <span class="tab-count" id="count-all">47</span>
           </button>
           <button class="tab-btn" data-filter="user" onclick="filterRole('user', this)">
             <span class="material-symbols-outlined" style="font-size: 16px;">person</span>
             <span>User Screens</span>
-            <span class="tab-count">13</span>
+            <span class="tab-count">15</span>
           </button>
           <button class="tab-btn" data-filter="admin" onclick="filterRole('admin', this)">
             <span class="material-symbols-outlined" style="font-size: 16px;">admin_panel_settings</span>
             <span>Admin Screens</span>
-            <span class="tab-count">14</span>
+            <span class="tab-count">19</span>
           </button>
           <button class="tab-btn" data-filter="layouts" onclick="filterRole('layouts', this)">
             <span class="material-symbols-outlined" style="font-size: 16px;">view_quilt</span>
@@ -744,10 +744,10 @@
           </div>
           <div>
             <h2 class="section-title">User Experience Screens</h2>
-            <div class="section-subtitle">13 complete screens for personal financial tracking and analytics</div>
+            <div class="section-subtitle">15 complete screens for personal financial tracking and analytics</div>
           </div>
         </div>
-        <span class="badge badge-blue">13 Screens</span>
+        <span class="badge badge-blue">15 Screens</span>
       </div>
 
       <div class="screens-grid" id="user-grid">
@@ -848,9 +848,9 @@
           </div>
         </article>
 
-        <!-- U04_del: Expense Delete Confirmation -->
+        <!-- U04_DEL: Expense Delete Confirmation -->
         <article class="screen-card" data-role="user" data-id="U04_DEL" data-title="Delete Expense Modal">
-          <div class="card-preview" onclick="openViewer('./design/u04_delete_confirmation/code.html', 'U04 — Delete Confirmation', 'Delete Expense')">
+          <div class="card-preview" onclick="openViewer('./design/u04_delete_confirmation/code.html', 'U04_DEL — Delete Confirmation', 'Delete Expense')">
             <img src="./design/u04_delete_confirmation/screen.png" alt="U04 Delete Expense Modal Preview" loading="lazy">
             <div class="card-preview-overlay">
               <span class="btn btn-primary btn-sm"><span class="material-symbols-outlined" style="font-size: 16px;">visibility</span> Live Preview</span>
@@ -864,7 +864,7 @@
             <h3 class="card-title">Delete Expense Confirmation</h3>
             <p class="card-desc">Modal dialog with danger warnings, cancel trigger, and permanent delete confirmation.</p>
             <div class="card-footer">
-              <button class="btn btn-primary btn-sm" onclick="openViewer('./design/u04_delete_confirmation/code.html', 'U04 — Delete Confirmation', 'Delete Expense')">
+              <button class="btn btn-primary btn-sm" onclick="openViewer('./design/u04_delete_confirmation/code.html', 'U04_DEL — Delete Confirmation', 'Delete Expense')">
                 <span class="material-symbols-outlined" style="font-size: 16px;">visibility</span> Preview
               </button>
               <a href="./design/u04_delete_confirmation/code.html" target="_blank" class="btn btn-outline btn-sm"><span class="material-symbols-outlined" style="font-size: 16px;">open_in_new</span></a>
@@ -944,6 +944,30 @@
           </div>
         </article>
 
+        <!-- U07_DEL: Delete Income Confirmation -->
+        <article class="screen-card" data-role="user" data-id="U07_DEL" data-title="Delete Income Modal">
+          <div class="card-preview" onclick="openViewer('./design/u07_delete_income_confirmation/code.html', 'U07_DEL — Delete Confirmation', 'Delete Income')">
+            <img src="./design/u07_delete_income_confirmation/screen.png" alt="U07 Delete Income Confirmation Preview" loading="lazy">
+            <div class="card-preview-overlay">
+              <span class="btn btn-primary btn-sm"><span class="material-symbols-outlined" style="font-size: 16px;">visibility</span> Live Preview</span>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="card-meta-row">
+              <span class="screen-id-badge user-id-badge">U07_DEL</span>
+              <span class="category-tag">Incomes</span>
+            </div>
+            <h3 class="card-title">Delete Income Confirmation</h3>
+            <p class="card-desc">Dedicated confirmation modal with danger notice for deleting an income record.</p>
+            <div class="card-footer">
+              <button class="btn btn-primary btn-sm" onclick="openViewer('./design/u07_delete_income_confirmation/code.html', 'U07_DEL — Delete Confirmation', 'Delete Income')">
+                <span class="material-symbols-outlined" style="font-size: 16px;">visibility</span> Preview
+              </button>
+              <a href="./design/u07_delete_income_confirmation/code.html" target="_blank" class="btn btn-outline btn-sm"><span class="material-symbols-outlined" style="font-size: 16px;">open_in_new</span></a>
+            </div>
+          </div>
+        </article>
+
         <!-- U08: Create/Edit Income -->
         <article class="screen-card" data-role="user" data-id="U08" data-title="Create / Edit Income">
           <div class="card-preview" onclick="openViewer('./design/u08_create_edit_income/code.html', 'U08 — Income Form', 'Add Income')">
@@ -988,6 +1012,30 @@
                 <span class="material-symbols-outlined" style="font-size: 16px;">visibility</span> Preview
               </button>
               <a href="./design/u09_category_list/code.html" target="_blank" class="btn btn-outline btn-sm"><span class="material-symbols-outlined" style="font-size: 16px;">open_in_new</span></a>
+            </div>
+          </div>
+        </article>
+
+        <!-- U09_DEL: Delete Category Confirmation -->
+        <article class="screen-card" data-role="user" data-id="U09_DEL" data-title="Delete Category Modal">
+          <div class="card-preview" onclick="openViewer('./design/u09_delete_category_confirmation/code.html', 'U09_DEL — Delete Category', 'Delete Category Confirmation')">
+            <img src="./design/u09_delete_category_confirmation/screen.png" alt="U09 Delete Category Confirmation Preview" loading="lazy">
+            <div class="card-preview-overlay">
+              <span class="btn btn-primary btn-sm"><span class="material-symbols-outlined" style="font-size: 16px;">visibility</span> Live Preview</span>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="card-meta-row">
+              <span class="screen-id-badge user-id-badge">U09_DEL</span>
+              <span class="category-tag">Categories</span>
+            </div>
+            <h3 class="card-title">Delete Category Confirmation</h3>
+            <p class="card-desc">Confirmation dialog warning about transaction reassignment upon category deletion.</p>
+            <div class="card-footer">
+              <button class="btn btn-primary btn-sm" onclick="openViewer('./design/u09_delete_category_confirmation/code.html', 'U09_DEL — Delete Category', 'Delete Category Confirmation')">
+                <span class="material-symbols-outlined" style="font-size: 16px;">visibility</span> Preview
+              </button>
+              <a href="./design/u09_delete_category_confirmation/code.html" target="_blank" class="btn btn-outline btn-sm"><span class="material-symbols-outlined" style="font-size: 16px;">open_in_new</span></a>
             </div>
           </div>
         </article>
@@ -1040,6 +1088,30 @@
           </div>
         </article>
 
+        <!-- U11_DEL: Delete Budget Confirmation -->
+        <article class="screen-card" data-role="user" data-id="U11_DEL" data-title="Delete Budget Modal">
+          <div class="card-preview" onclick="openViewer('./design/u11_delete_budget_confirmation/code.html', 'U11_DEL — Delete Budget', 'Delete Budget Confirmation')">
+            <img src="./design/u11_delete_budget_confirmation/screen.png" alt="U11 Delete Budget Confirmation Preview" loading="lazy">
+            <div class="card-preview-overlay">
+              <span class="btn btn-primary btn-sm"><span class="material-symbols-outlined" style="font-size: 16px;">visibility</span> Live Preview</span>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="card-meta-row">
+              <span class="screen-id-badge user-id-badge">U11_DEL</span>
+              <span class="category-tag">Budgets</span>
+            </div>
+            <h3 class="card-title">Delete Budget Confirmation</h3>
+            <p class="card-desc">Modal dialog to remove monthly category spending limits and threshold tracking.</p>
+            <div class="card-footer">
+              <button class="btn btn-primary btn-sm" onclick="openViewer('./design/u11_delete_budget_confirmation/code.html', 'U11_DEL — Delete Budget', 'Delete Budget Confirmation')">
+                <span class="material-symbols-outlined" style="font-size: 16px;">visibility</span> Preview
+              </button>
+              <a href="./design/u11_delete_budget_confirmation/code.html" target="_blank" class="btn btn-outline btn-sm"><span class="material-symbols-outlined" style="font-size: 16px;">open_in_new</span></a>
+            </div>
+          </div>
+        </article>
+
         <!-- U13: Reports & Analytics -->
         <article class="screen-card" data-role="user" data-id="U13" data-title="Reports & Analytics">
           <div class="card-preview" onclick="openViewer('./design/u13_reports_analytics/code.html', 'U13 — Reports', 'Reports & Analytics')">
@@ -1076,10 +1148,10 @@
           </div>
           <div>
             <h2 class="section-title">Admin Management Screens</h2>
-            <div class="section-subtitle">14 full screens for system administration, auditing, and bulk data operations</div>
+            <div class="section-subtitle">19 full screens for system administration, auditing, and bulk data operations</div>
           </div>
         </div>
-        <span class="badge badge-purple">14 Screens</span>
+        <span class="badge badge-purple">19 Screens</span>
       </div>
 
       <div class="screens-grid" id="admin-grid">
@@ -1158,7 +1230,7 @@
 
         <!-- A05_DEL: Delete User Confirmation -->
         <article class="screen-card" data-role="admin" data-id="A05_DEL" data-title="Delete User Confirmation">
-          <div class="card-preview" onclick="openViewer('./design/a05_delete_user_confirmation/code.html', 'A05 — Delete User Modal', 'Delete User Confirmation')">
+          <div class="card-preview" onclick="openViewer('./design/a05_delete_user_confirmation/code.html', 'A05_DEL — Delete User Modal', 'Delete User Confirmation')">
             <img src="./design/a05_delete_user_confirmation/screen.png" alt="A05 Delete User Modal Preview" loading="lazy">
             <div class="card-preview-overlay">
               <span class="btn btn-primary btn-sm"><span class="material-symbols-outlined" style="font-size: 16px;">visibility</span> Live Preview</span>
@@ -1172,7 +1244,7 @@
             <h3 class="card-title">Delete User Confirmation</h3>
             <p class="card-desc">Dedicated notification and modal interface for permanent user account deletion.</p>
             <div class="card-footer">
-              <button class="btn btn-primary btn-sm" onclick="openViewer('./design/a05_delete_user_confirmation/code.html', 'A05 — Delete User Modal', 'Delete User Confirmation')">
+              <button class="btn btn-primary btn-sm" onclick="openViewer('./design/a05_delete_user_confirmation/code.html', 'A05_DEL — Delete User Modal', 'Delete User Confirmation')">
                 <span class="material-symbols-outlined" style="font-size: 16px;">visibility</span> Preview
               </button>
               <a href="./design/a05_delete_user_confirmation/code.html" target="_blank" class="btn btn-outline btn-sm"><span class="material-symbols-outlined" style="font-size: 16px;">open_in_new</span></a>
@@ -1200,6 +1272,30 @@
                 <span class="material-symbols-outlined" style="font-size: 16px;">visibility</span> Preview
               </button>
               <a href="./design/a06_admin_category_list/code.html" target="_blank" class="btn btn-outline btn-sm"><span class="material-symbols-outlined" style="font-size: 16px;">open_in_new</span></a>
+            </div>
+          </div>
+        </article>
+
+        <!-- A06_DEL: Delete Global Category Confirmation -->
+        <article class="screen-card" data-role="admin" data-id="A06_DEL" data-title="Delete Category Modal">
+          <div class="card-preview" onclick="openViewer('./design/a06_delete_category_confirmation/code.html', 'A06_DEL — Delete Category', 'Delete Global Category Confirmation')">
+            <img src="./design/a06_delete_category_confirmation/screen.png" alt="A06 Delete Global Category Confirmation Preview" loading="lazy">
+            <div class="card-preview-overlay">
+              <span class="btn btn-primary btn-sm"><span class="material-symbols-outlined" style="font-size: 16px;">visibility</span> Live Preview</span>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="card-meta-row">
+              <span class="screen-id-badge admin-id-badge">A06_DEL</span>
+              <span class="category-tag">Categories</span>
+            </div>
+            <h3 class="card-title">Delete Global Category Modal</h3>
+            <p class="card-desc">Administrative confirmation warning about system-wide user transaction reassignment.</p>
+            <div class="card-footer">
+              <button class="btn btn-primary btn-sm" onclick="openViewer('./design/a06_delete_category_confirmation/code.html', 'A06_DEL — Delete Category', 'Delete Global Category Confirmation')">
+                <span class="material-symbols-outlined" style="font-size: 16px;">visibility</span> Preview
+              </button>
+              <a href="./design/a06_delete_category_confirmation/code.html" target="_blank" class="btn btn-outline btn-sm"><span class="material-symbols-outlined" style="font-size: 16px;">open_in_new</span></a>
             </div>
           </div>
         </article>
@@ -1252,6 +1348,30 @@
           </div>
         </article>
 
+        <!-- A08_DEL: Delete Budget Template Confirmation -->
+        <article class="screen-card" data-role="admin" data-id="A08_DEL" data-title="Delete Budget Template Modal">
+          <div class="card-preview" onclick="openViewer('./design/a08_delete_budget_template_confirmation/code.html', 'A08_DEL — Delete Template', 'Delete Budget Template Confirmation')">
+            <img src="./design/a08_delete_budget_template_confirmation/screen.png" alt="A08 Delete Budget Template Preview" loading="lazy">
+            <div class="card-preview-overlay">
+              <span class="btn btn-primary btn-sm"><span class="material-symbols-outlined" style="font-size: 16px;">visibility</span> Live Preview</span>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="card-meta-row">
+              <span class="screen-id-badge admin-id-badge">A08_DEL</span>
+              <span class="category-tag">Budget Templates</span>
+            </div>
+            <h3 class="card-title">Delete Budget Template Modal</h3>
+            <p class="card-desc">Confirmation dialog to permanently delete a system budget template.</p>
+            <div class="card-footer">
+              <button class="btn btn-primary btn-sm" onclick="openViewer('./design/a08_delete_budget_template_confirmation/code.html', 'A08_DEL — Delete Template', 'Delete Budget Template Confirmation')">
+                <span class="material-symbols-outlined" style="font-size: 16px;">visibility</span> Preview
+              </button>
+              <a href="./design/a08_delete_budget_template_confirmation/code.html" target="_blank" class="btn btn-outline btn-sm"><span class="material-symbols-outlined" style="font-size: 16px;">open_in_new</span></a>
+            </div>
+          </div>
+        </article>
+
         <!-- A09: Create/Edit Budget Template -->
         <article class="screen-card" data-role="admin" data-id="A09" data-title="Create / Edit Budget Template">
           <div class="card-preview" onclick="openViewer('./design/a09_create_edit_budget_template/code.html', 'A09 — Template Form', 'Template Form')">
@@ -1296,6 +1416,30 @@
                 <span class="material-symbols-outlined" style="font-size: 16px;">visibility</span> Preview
               </button>
               <a href="./design/a10_system_expense_list/code.html" target="_blank" class="btn btn-outline btn-sm"><span class="material-symbols-outlined" style="font-size: 16px;">open_in_new</span></a>
+            </div>
+          </div>
+        </article>
+
+        <!-- A10_DEL: Delete System Expense Confirmation -->
+        <article class="screen-card" data-role="admin" data-id="A10_DEL" data-title="Delete System Expense Modal">
+          <div class="card-preview" onclick="openViewer('./design/a10_delete_system_expense_confirmation/code.html', 'A10_DEL — Delete Expense', 'Delete System Expense Confirmation')">
+            <img src="./design/a10_delete_system_expense_confirmation/screen.png" alt="A10 Delete System Expense Preview" loading="lazy">
+            <div class="card-preview-overlay">
+              <span class="btn btn-primary btn-sm"><span class="material-symbols-outlined" style="font-size: 16px;">visibility</span> Live Preview</span>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="card-meta-row">
+              <span class="screen-id-badge admin-id-badge">A10_DEL</span>
+              <span class="category-tag">Expenses</span>
+            </div>
+            <h3 class="card-title">Delete System Expense Modal</h3>
+            <p class="card-desc">Administrative confirmation dialog for deleting an expense record from user ledger.</p>
+            <div class="card-footer">
+              <button class="btn btn-primary btn-sm" onclick="openViewer('./design/a10_delete_system_expense_confirmation/code.html', 'A10_DEL — Delete Expense', 'Delete System Expense Confirmation')">
+                <span class="material-symbols-outlined" style="font-size: 16px;">visibility</span> Preview
+              </button>
+              <a href="./design/a10_delete_system_expense_confirmation/code.html" target="_blank" class="btn btn-outline btn-sm"><span class="material-symbols-outlined" style="font-size: 16px;">open_in_new</span></a>
             </div>
           </div>
         </article>
@@ -1348,6 +1492,30 @@
           </div>
         </article>
 
+        <!-- A12_DEL: Delete System Income Confirmation -->
+        <article class="screen-card" data-role="admin" data-id="A12_DEL" data-title="Delete System Income Modal">
+          <div class="card-preview" onclick="openViewer('./design/a12_delete_system_income_confirmation/code.html', 'A12_DEL — Delete Income', 'Delete System Income Confirmation')">
+            <img src="./design/a12_delete_system_income_confirmation/screen.png" alt="A12 Delete System Income Preview" loading="lazy">
+            <div class="card-preview-overlay">
+              <span class="btn btn-primary btn-sm"><span class="material-symbols-outlined" style="font-size: 16px;">visibility</span> Live Preview</span>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="card-meta-row">
+              <span class="screen-id-badge admin-id-badge">A12_DEL</span>
+              <span class="category-tag">Incomes</span>
+            </div>
+            <h3 class="card-title">Delete System Income Modal</h3>
+            <p class="card-desc">Administrative confirmation dialog for deleting an income record from user balance.</p>
+            <div class="card-footer">
+              <button class="btn btn-primary btn-sm" onclick="openViewer('./design/a12_delete_system_income_confirmation/code.html', 'A12_DEL — Delete Income', 'Delete System Income Confirmation')">
+                <span class="material-symbols-outlined" style="font-size: 16px;">visibility</span> Preview
+              </button>
+              <a href="./design/a12_delete_system_income_confirmation/code.html" target="_blank" class="btn btn-outline btn-sm"><span class="material-symbols-outlined" style="font-size: 16px;">open_in_new</span></a>
+            </div>
+          </div>
+        </article>
+
         <!-- A13: System Income Edit -->
         <article class="screen-card" data-role="admin" data-id="A13" data-title="System Income Edit">
           <div class="card-preview" onclick="openViewer('./design/a13_system_income_edit/code.html', 'A13 — Income Edit', 'Edit Income')">
@@ -1392,6 +1560,30 @@
                 <span class="material-symbols-outlined" style="font-size: 16px;">visibility</span> Preview
               </button>
               <a href="./design/a14_activity_logs/code.html" target="_blank" class="btn btn-outline btn-sm"><span class="material-symbols-outlined" style="font-size: 16px;">open_in_new</span></a>
+            </div>
+          </div>
+        </article>
+
+        <!-- A14_DEL: Clear Activity Logs Confirmation -->
+        <article class="screen-card" data-role="admin" data-id="A14_DEL" data-title="Clear Logs Modal">
+          <div class="card-preview" onclick="openViewer('./design/a14_clear_activity_logs_confirmation/code.html', 'A14_DEL — Clear Logs', 'Clear Activity Logs Confirmation')">
+            <img src="./design/a14_clear_activity_logs_confirmation/screen.png" alt="A14 Clear Activity Logs Preview" loading="lazy">
+            <div class="card-preview-overlay">
+              <span class="btn btn-primary btn-sm"><span class="material-symbols-outlined" style="font-size: 16px;">visibility</span> Live Preview</span>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="card-meta-row">
+              <span class="screen-id-badge admin-id-badge">A14_DEL</span>
+              <span class="category-tag">Audit Logs</span>
+            </div>
+            <h3 class="card-title">Clear Activity Logs Modal</h3>
+            <p class="card-desc">Confirmation dialog to purge historical system audit activity logs older than 90 days.</p>
+            <div class="card-footer">
+              <button class="btn btn-primary btn-sm" onclick="openViewer('./design/a14_clear_activity_logs_confirmation/code.html', 'A14_DEL — Clear Logs', 'Clear Activity Logs Confirmation')">
+                <span class="material-symbols-outlined" style="font-size: 16px;">visibility</span> Preview
+              </button>
+              <a href="./design/a14_clear_activity_logs_confirmation/code.html" target="_blank" class="btn btn-outline btn-sm"><span class="material-symbols-outlined" style="font-size: 16px;">open_in_new</span></a>
             </div>
           </div>
         </article>

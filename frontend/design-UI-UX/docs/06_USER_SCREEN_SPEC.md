@@ -51,17 +51,26 @@
 - **Toolbar**: Search bar, Income type filter, Date range selector.
 - **Data Table**: Source title, Type badge (Salary, Freelance, Dividend), Amount (`+$3,500.00`), Date, Actions.
 
+### U07_DEL: Delete Income Confirmation (`design/u07_delete_income_confirmation/code.html`)
+- **Modal Dialog**: Danger alert notice, item summary, and permanent deletion trigger.
+
 ### U08: Create / Edit Income (`design/u08_create_edit_income/code.html`)
 - **Fields**: Source title, Amount, Date, Income Classification Type (Salary, Freelance, Investment, Bonus), Remarks.
 
 ### U09: Category Management List (`design/u09_category_list/code.html`)
 - **Grid Layout**: Visual category cards displaying category icon, title, description, and action menus.
 
+### U09_DEL: Delete Category Confirmation (`design/u09_delete_category_confirmation/code.html`)
+- **Modal Dialog**: Danger notice warning that existing transactions will be flagged as Uncategorized upon deletion.
+
 ### U10: Create / Edit Category (`design/u10_create_edit_category/code.html`)
 - **Fields**: Category Name, Icon picker grid, Description textarea.
 
 ### U11: Budget Management List (`design/u11_budget_list/code.html`)
 - **Cards**: Monthly budget limits per category, progress bar percentage, spent vs limit figures, threshold warning badge for limits > 80%.
+
+### U11_DEL: Delete Budget Confirmation (`design/u11_delete_budget_confirmation/code.html`)
+- **Modal Dialog**: Warning notice that category spending threshold and progress tracking will be removed for the cycle.
 
 ### U12: Create / Edit Budget (`design/u12_create_edit_budget/code.html`)
 - **Fields**: Month selector (`YYYY-MM`), Category dropdown, Monthly Budget Limit ($).
