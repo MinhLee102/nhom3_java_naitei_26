@@ -37,7 +37,7 @@ apiClient.interceptors.request.use(
 
 /**
  * Response Interceptor:
- * - Unwrap dữ liệu từ format ApiResponse { code, message, data } của Spring Boot
+ * - Unwrap dữ liệu từ format ApiResponse { status, message, data } của Spring Boot
  * - Xử lý lỗi tập trung: 401 → redirect /login, lỗi khác → trả message chuẩn hóa
  *
  * TODO: Xác nhận format response thực tế với đội backend.
@@ -65,7 +65,7 @@ apiClient.interceptors.response.use(
     }
 
     return Promise.reject({
-      code: status || 500,
+      status: status || 500,
       message,
       details: error.response?.data,
     });

@@ -1,10 +1,10 @@
 /**
  * Generic API Response type — phù hợp với format chuẩn của Spring Boot backend.
  * TODO: Xác nhận lại format response thực tế với đội backend.
- * Giả định format: { code, message, data }
+ * Giả định format: { status, message, data }
  */
 export interface ApiResponse<T> {
-  code: number;
+  status: number;
   message: string;
   data: T;
 }
