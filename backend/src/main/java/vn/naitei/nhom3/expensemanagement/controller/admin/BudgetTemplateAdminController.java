@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,6 +37,7 @@ public class BudgetTemplateAdminController {
     private final BudgetTemplateDetailService budgetTemplateDetailService;
 
     @GetMapping
+        @Transactional(readOnly = true)
     public ResponseEntity<ApiResponse<List<BudgetTemplateResponse>>> getAll() {
         List<BudgetTemplateResponse> responses = budgetTemplateService.getAll().stream()
                 .map(template -> toResponse(template,
@@ -45,6 +47,7 @@ public class BudgetTemplateAdminController {
     }
 
     @GetMapping("/{id}")
+        @Transactional(readOnly = true)
     public ResponseEntity<ApiResponse<BudgetTemplateResponse>> getById(@PathVariable Long id) {
         BudgetTemplate template = budgetTemplateService.getById(id);
         List<BudgetTemplateDetail> details = budgetTemplateDetailService.getByTemplateId(id);
@@ -52,6 +55,7 @@ public class BudgetTemplateAdminController {
     }
 
     @PostMapping
+        @Transactional
     public ResponseEntity<ApiResponse<BudgetTemplateResponse>> create(
             @Valid @RequestBody BudgetTemplateCreateRequest request) {
         BudgetTemplate template = budgetTemplateService.create(toEntity(request.getName(),
@@ -63,6 +67,7 @@ public class BudgetTemplateAdminController {
     }
 
     @PutMapping("/{id}")
+        @Transactional
     public ResponseEntity<ApiResponse<BudgetTemplateResponse>> update(
             @PathVariable Long id, @Valid @RequestBody BudgetTemplateUpdateRequest request) {
         BudgetTemplate existingTemplate = budgetTemplateService.getById(id);
@@ -79,6 +84,7 @@ public class BudgetTemplateAdminController {
     }
 
     @DeleteMapping("/{id}")
+        @Transactional
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
         budgetTemplateService.delete(id);
         return ResponseEntity.ok(ApiResponse.success("Xóa mẫu ngân sách thành công", null));

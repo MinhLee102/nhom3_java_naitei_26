@@ -1,9 +1,9 @@
 package vn.naitei.nhom3.expensemanagement.config;
 
-import lombok.RequiredArgsConstructor;
+import java.util.Arrays;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -17,7 +17,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import java.util.Arrays;
+
+import lombok.RequiredArgsConstructor;
 import vn.naitei.nhom3.expensemanagement.security.CustomUserDetailsService;
 import vn.naitei.nhom3.expensemanagement.security.JwtAuthenticationFilter;
 
@@ -56,9 +57,7 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**", "/v3/api-docs.yaml")
                         .permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/budget-templates/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/budget-templates/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/api/budget-templates/**").hasRole("ADMIN")
+                        .requestMatchers("/api/admin/budget-templates/**").hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

@@ -1,14 +1,14 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
-import { Plus, Save, Trash2 } from "lucide-react";
+import { ArrowLeft, Plus, Save, X } from "lucide-react";
 import { useRouter } from "next/navigation";
+import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import Input from "@/components/ui/Input";
 import Select from "@/components/ui/Select";
-import Button from "@/components/ui/Button";
 import { useCategories } from "@/features/category/hooks";
-import { useCreateBudgetTemplate, useUpdateBudgetTemplate, useBudgetTemplate } from "./hooks";
+import { useBudgetTemplate, useCreateBudgetTemplate, useUpdateBudgetTemplate } from "./hooks";
 import type {
   BudgetTemplateDetailDto,
   CreateBudgetTemplateDto,
@@ -44,7 +44,11 @@ export default function BudgetTemplateForm({ mode, id }: BudgetTemplateFormProps
   const isEdit = mode === "edit";
   const [values, setValues] = useState<FormValues>(initialValues);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const { data: categories, isLoading: categoriesLoading } = useCategories();
+  const {
+    data: categories,
+    isLoading: categoriesLoading,
+    isError: categoriesError,
+  } = useCategories();
   const {
     data: template,
     isLoading: templateLoading,
@@ -55,6 +59,7 @@ export default function BudgetTemplateForm({ mode, id }: BudgetTemplateFormProps
   const mutation = isEdit ? updateMutation : createMutation;
   const expenseCategories =
     categories?.content.filter((category) => category.type === "EXPENSE") ?? [];
+  const total = values.details.reduce((sum, detail) => sum + (detail.amount || 0), 0);
 
   useEffect(() => {
     if (isEdit && template) {
@@ -80,11 +85,11 @@ export default function BudgetTemplateForm({ mode, id }: BudgetTemplateFormProps
   }, [mutation.isSuccess, router]);
 
   if (isEdit && templateLoading) {
-    return <FormState message="Đang tải mẫu ngân sách..." />;
+    return <FormState message="Loading budget template..." />;
   }
 
   if (isEdit && templateError) {
-    return <FormState message="Không thể tải mẫu ngân sách." isError />;
+    return <FormState message="Unable to load budget template." isError />;
   }
 
   const updateDetail = (index: number, field: keyof BudgetTemplateDetailDto, value: string) => {
@@ -103,7 +108,7 @@ export default function BudgetTemplateForm({ mode, id }: BudgetTemplateFormProps
     const month = Number(values.month);
     const warningPercentage = Number(values.warningPercentage);
 
-    if (!values.name.trim()) nextErrors.name = "Name is required";
+    if (!values.name.trim()) nextErrors.name = "Template name is required";
     if (!Number.isInteger(month) || month < 1 || month > 12) {
       nextErrors.month = "Month must be between 1 and 12";
     }
@@ -113,13 +118,15 @@ export default function BudgetTemplateForm({ mode, id }: BudgetTemplateFormProps
       warningPercentage > 100 ||
       warningPercentage % 5 !== 0
     ) {
-      nextErrors.warningPercentage = "Warning percentage must be 50-100 in steps of 5";
+      nextErrors.warningPercentage = "Use a value from 50 to 100 in steps of 5";
     }
     if (values.details.length === 0) {
-      nextErrors.details = "At least one detail is required";
+      nextErrors.details = "At least one category row is required";
     }
     values.details.forEach((detail, index) => {
-      if (!detail.categoryId) nextErrors[`details.${index}.categoryId`] = "Category is required";
+      if (!detail.categoryId) {
+        nextErrors[`details.${index}.categoryId`] = "Category is required";
+      }
       if (!Number.isFinite(detail.amount) || detail.amount <= 0) {
         nextErrors[`details.${index}.amount`] = "Amount must be positive";
       }
@@ -151,7 +158,10 @@ export default function BudgetTemplateForm({ mode, id }: BudgetTemplateFormProps
   };
 
   const addDetail = () => {
-    setValues((current) => ({ ...current, details: [...current.details, emptyDetail()] }));
+    setValues((current) => ({
+      ...current,
+      details: [...current.details, emptyDetail()],
+    }));
   };
 
   const removeDetail = (index: number) => {
@@ -162,117 +172,180 @@ export default function BudgetTemplateForm({ mode, id }: BudgetTemplateFormProps
   };
 
   return (
-    <form className="space-y-6" onSubmit={handleSubmit}>
-      <Card title="Basic information" description="Set the template rules used by users.">
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-          <div className="md:col-span-3">
+    <div className="mx-auto w-full max-w-4xl">
+      <nav className="mb-6 flex items-center gap-2 text-xs font-medium text-[#515f74]">
+        <button
+          type="button"
+          onClick={() => router.push("/admin/budget-templates")}
+          className="flex items-center gap-1 transition-colors hover:text-[#004ac6]"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Budget Templates
+        </button>
+        <span className="text-slate-300">/</span>
+        <span className="font-semibold text-[#131b2e]">Template Form</span>
+      </nav>
+
+      <Card className="rounded-2xl border-[#E2E8F0] p-6 shadow-sm md:p-8">
+        <div className="mb-6 border-b border-[#E2E8F0] pb-4">
+          <h2 className="text-xl font-bold text-[#131b2e] md:text-2xl">
+            {isEdit ? "Edit Budget Template" : "Create Budget Template"}
+          </h2>
+          <p className="mt-1 text-xs text-[#515f74]">
+            Define template name, default target month, and repeatable default category allocations
+          </p>
+        </div>
+
+        <form className="space-y-6" onSubmit={handleSubmit}>
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
             <Input
-              label="Name"
+              label="Template Name"
               value={values.name}
               onChange={(event) => setValues({ ...values, name: event.target.value })}
               error={errors.name}
-              placeholder="e.g. Essential expenses"
+              placeholder="e.g. Standard Living Budget"
+              className="rounded-xl bg-[#F8FAFC] px-4 py-2.5 text-sm focus:bg-white"
+            />
+            <Input
+              label="Default Target Month"
+              type="number"
+              min={1}
+              max={12}
+              value={values.month}
+              onChange={(event) => setValues({ ...values, month: event.target.value })}
+              error={errors.month}
+              className="rounded-xl bg-[#F8FAFC] px-4 py-2.5 text-sm focus:bg-white"
+            />
+            <Input
+              label="Warning Percentage"
+              type="number"
+              min={50}
+              max={100}
+              step={5}
+              value={values.warningPercentage}
+              onChange={(event) => setValues({ ...values, warningPercentage: event.target.value })}
+              error={errors.warningPercentage}
+              className="rounded-xl bg-[#F8FAFC] px-4 py-2.5 text-sm focus:bg-white"
             />
           </div>
-          <Input
-            label="Month"
-            type="number"
-            min={1}
-            max={12}
-            value={values.month}
-            onChange={(event) => setValues({ ...values, month: event.target.value })}
-            error={errors.month}
-          />
-          <Input
-            label="Warning percentage"
-            type="number"
-            min={50}
-            max={100}
-            step={5}
-            value={values.warningPercentage}
-            onChange={(event) => setValues({ ...values, warningPercentage: event.target.value })}
-            error={errors.warningPercentage}
-          />
-        </div>
-      </Card>
 
-      <Card
-        title="Category allocations"
-        description="Add at least one expense category and its planned amount."
-        action={
-          <Button type="button" variant="outline" size="sm" onClick={addDetail}>
-            <Plus className="h-4 w-4" />
-            Add detail
-          </Button>
-        }
-      >
-        <div className="space-y-4">
-          {values.details.map((detail, index) => (
-            <div
-              key={`${index}-${detail.categoryId}`}
-              className="grid grid-cols-1 items-start gap-3 rounded-lg border border-gray-200 p-4 sm:grid-cols-[minmax(0,1fr)_180px_auto]"
-            >
-              <Select
-                label={`Category ${index + 1}`}
-                options={expenseCategories.map((category) => ({
-                  label: category.name,
-                  value: category.id,
-                }))}
-                placeholder={
-                  categoriesLoading ? "Loading categories..." : "Select expense category"
-                }
-                value={detail.categoryId}
-                onChange={(event) => updateDetail(index, "categoryId", event.target.value)}
-                error={errors[`details.${index}.categoryId`]}
-                disabled={categoriesLoading}
-              />
-              <Input
-                label="Amount"
-                type="number"
-                min={0}
-                step="0.01"
-                value={detail.amount || ""}
-                onChange={(event) => updateDetail(index, "amount", event.target.value)}
-                error={errors[`details.${index}.amount`]}
-              />
+          <div>
+            <div className="mb-3 flex items-center justify-between gap-3">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-[#515f74]">
+                Default Categories &amp; Allocated Amounts <span className="text-red-600">*</span>
+              </label>
               <Button
                 type="button"
                 variant="ghost"
                 size="sm"
-                onClick={() => removeDetail(index)}
-                aria-label={`Remove category ${index + 1}`}
-                title="Remove detail"
+                onClick={addDetail}
+                className="rounded-lg bg-blue-50 text-[#004ac6] hover:bg-blue-100"
               >
-                <Trash2 className="h-4 w-4 text-red-500" />
+                <Plus className="h-4 w-4" />
+                Add Category Row
               </Button>
             </div>
-          ))}
-          {errors.details && <p className="text-sm text-red-600">{errors.details}</p>}
-        </div>
-      </Card>
 
-      <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-        <Button
-          type="button"
-          variant="outline"
-          onClick={() => router.push("/admin/budget-templates")}
-        >
-          Cancel
-        </Button>
-        <Button type="submit" isLoading={mutation.isPending}>
-          <Save className="h-4 w-4" />
-          {isEdit ? "Save changes" : "Create template"}
-        </Button>
-      </div>
-    </form>
+            <div className="space-y-3">
+              {values.details.map((detail, index) => (
+                <div
+                  key={`${index}-${detail.categoryId}`}
+                  className="flex flex-col items-stretch gap-3 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] p-3 sm:flex-row sm:items-center"
+                >
+                  <div className="min-w-0 flex-1 sm:min-w-[200px]">
+                    <Select
+                      label={`Category ${index + 1}`}
+                      options={expenseCategories.map((category) => ({
+                        label: category.name,
+                        value: category.id,
+                      }))}
+                      placeholder={
+                        categoriesLoading ? "Loading categories..." : "Select expense category"
+                      }
+                      value={detail.categoryId}
+                      onChange={(event) => updateDetail(index, "categoryId", event.target.value)}
+                      error={errors[`details.${index}.categoryId`]}
+                      disabled={categoriesLoading}
+                      className="rounded-lg bg-white text-xs font-semibold"
+                    />
+                  </div>
+                  <div className="sm:w-44">
+                    <Input
+                      label="Amount"
+                      type="number"
+                      min={0}
+                      step="0.01"
+                      value={detail.amount || ""}
+                      onChange={(event) => updateDetail(index, "amount", event.target.value)}
+                      error={errors[`details.${index}.amount`]}
+                      className="rounded-lg bg-white font-mono text-xs font-semibold"
+                    />
+                  </div>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => removeDetail(index)}
+                    aria-label={`Remove category ${index + 1}`}
+                    title="Remove row"
+                    className="self-end text-[#515f74] hover:bg-red-50 hover:text-red-600 sm:self-center"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+            {categoriesError && (
+              <p className="mt-2 text-sm text-red-600">Unable to load expense categories.</p>
+            )}
+            {errors.details && <p className="mt-2 text-sm text-red-600">{errors.details}</p>}
+          </div>
+
+          <div className="flex items-center justify-between rounded-xl border border-[#E2E8F0] bg-slate-50 p-4 text-sm">
+            <span className="font-semibold text-[#515f74]">Calculated Template Total:</span>
+            <span className="font-mono text-lg font-bold text-[#004ac6]">
+              {formatAmount(total)} USD
+            </span>
+          </div>
+
+          <div className="flex flex-col-reverse items-stretch justify-end gap-3 border-t border-[#E2E8F0] pt-4 sm:flex-row sm:items-center">
+            {mutation.isError && (
+              <p className="mr-auto text-sm text-red-600">
+                Unable to save the budget template. Please try again.
+              </p>
+            )}
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => router.push("/admin/budget-templates")}
+              className="rounded-xl"
+            >
+              Cancel
+            </Button>
+            <Button type="submit" isLoading={mutation.isPending} className="rounded-xl px-6">
+              <Save className="h-4 w-4" />
+              Save Budget Template
+            </Button>
+          </div>
+        </form>
+      </Card>
+    </div>
   );
+}
+
+function formatAmount(amount: number) {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 2,
+  }).format(amount);
 }
 
 function FormState({ message, isError = false }: { message: string; isError?: boolean }) {
   return (
     <Card>
       <div
-        className={`flex min-h-48 items-center justify-center text-sm ${isError ? "text-red-600" : "text-gray-500"}`}
+        className={`flex min-h-48 items-center justify-center text-sm ${isError ? "text-red-600" : "text-[#515f74]"}`}
       >
         {message}
       </div>
