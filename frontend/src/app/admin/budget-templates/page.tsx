@@ -1,6 +1,7 @@
 "use client";
 
 import { Plus, Pencil, Trash2 } from "lucide-react";
+import Link from "next/link";
 import Badge from "@/components/ui/Badge";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
@@ -14,14 +15,14 @@ export default function AdminBudgetTemplatesPage() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Budget Templates</h1>
-          <p className="mt-1 text-sm text-gray-500">
-            Quản lý các mẫu ngân sách cho người dùng
-          </p>
+          <p className="mt-1 text-sm text-gray-500">Quản lý các mẫu ngân sách cho người dùng</p>
         </div>
-        <Button disabled title="Create form will be available in a later commit">
-          <Plus className="h-4 w-4" />
-          Create Budget Template
-        </Button>
+        <Link href="/admin/budget-templates/new">
+          <Button>
+            <Plus className="h-4 w-4" />
+            Create Budget Template
+          </Button>
+        </Link>
       </div>
 
       {isLoading && <LoadingState />}
@@ -82,15 +83,16 @@ export default function AdminBudgetTemplatesPage() {
                     </td>
                     <td className="whitespace-nowrap px-4 py-4 text-right">
                       <div className="flex justify-end gap-2">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          disabled
-                          title="Edit will be available in a later commit"
-                          aria-label={`Edit ${template.name}`}
-                        >
-                          <Pencil className="h-4 w-4" />
-                        </Button>
+                        <Link href={`/admin/budget-templates/${template.id}/edit`}>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            title={`Edit ${template.name}`}
+                            aria-label={`Edit ${template.name}`}
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                        </Link>
                         <Button
                           variant="ghost"
                           size="sm"
