@@ -1,18 +1,19 @@
 package vn.naitei.nhom3.expensemanagement.service;
 
-import vn.naitei.nhom3.expensemanagement.entity.Expense;
+import vn.naitei.nhom3.expensemanagement.dto.expense.ExpenseRequest;
+import vn.naitei.nhom3.expensemanagement.dto.expense.ExpenseResponse;
 
 import java.util.List;
 
 public interface ExpenseService {
 
-    List<Expense> getAllByUser(Long userId);
+    List<ExpenseResponse> getAllByUser(Long userId);
 
-    Expense getById(Long id);
+    ExpenseResponse getById(Long userId, Long id);
 
-    Expense create(Long userId, Long categoryId, Expense expense);
+    ExpenseResponse create(Long userId, ExpenseRequest request);
 
-    Expense update(Long id, Long categoryId, Expense updated);
+    ExpenseResponse update(Long userId, Long id, ExpenseRequest request);
 
-    void delete(Long id);
+    void delete(Long userId, Long id);
 }
