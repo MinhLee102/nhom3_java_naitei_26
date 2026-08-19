@@ -47,7 +47,7 @@ Hệ thống quản lý chi tiêu cá nhân. Frontend được xây dựng bằn
 
 ```bash
 # 1. Clone repo và di chuyển vào thư mục frontend
-cd GroupPj
+cd frontend
 
 # 2. Copy file biến môi trường
 cp .env.local.example .env.local
