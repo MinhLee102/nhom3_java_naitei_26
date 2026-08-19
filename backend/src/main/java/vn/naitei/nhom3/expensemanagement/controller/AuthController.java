@@ -14,6 +14,7 @@ import vn.naitei.nhom3.expensemanagement.dto.auth.LoginRequest;
 import vn.naitei.nhom3.expensemanagement.dto.auth.RegisterRequest;
 import vn.naitei.nhom3.expensemanagement.service.AuthService;
 
+/**
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
@@ -34,3 +35,4 @@ public class AuthController {
         return ResponseEntity.ok(ApiResponse.success("Đăng nhập thành công", response));
     }
 }
+ **/
