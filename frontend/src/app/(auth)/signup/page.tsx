@@ -5,8 +5,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import apiClient from "@/lib/axios";
 
-export default function LoginPage() {
+export default function SignUpPage() {
   const router = useRouter();
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -18,25 +19,19 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      // apiClient tự unwrap ApiResponse -> res.data nhận trực tiếp object AuthResponse
-      const res = await apiClient.post("/auth/login", { email, password });
+      const res = await apiClient.post("/auth/register", { name, email, password });
       const { token, refreshToken, user } = res.data;
 
-      // Lưu đúng key "access_token" cho apiClient dùng chung
       localStorage.setItem("access_token", token);
       if (refreshToken) localStorage.setItem("refresh_token", refreshToken);
       localStorage.setItem("user", JSON.stringify(user));
 
-      if (user?.role === "ADMIN") {
-        router.push("/admin/users");
-      } else {
-        router.push("/dashboard");
-      }
+      router.push("/dashboard");
     } catch (err: unknown) {
       setErrorMessage(
         err instanceof Error
           ? err.message
-          : "Đăng nhập thất bại. Vui lòng kiểm tra lại tài khoản hoặc mật khẩu."
+          : "Đăng ký thất bại. Vui lòng kiểm tra lại thông tin."
       );
     } finally {
       setLoading(false);
@@ -46,9 +41,9 @@ export default function LoginPage() {
   return (
     <>
       <div className="text-center -mt-4 mb-6">
-        <h2 className="text-xl font-bold text-[#131b2e] mb-1">Sign In</h2>
+        <h2 className="text-xl font-bold text-[#131b2e] mb-1">Create Account</h2>
         <p className="text-sm text-[#515f74]">
-          Access your personal financial management account.
+          Join FinTrack Pro to manage your personal finances today.
         </p>
       </div>
 
@@ -60,7 +55,27 @@ export default function LoginPage() {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-xs font-semibold uppercase tracking-wider text-[#515f74] mb-1.5" htmlFor="name">
+              Full Name
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                <span className="material-symbols-outlined text-[20px]">person</span>
+              </div>
+              <input
+                id="name"
+                type="text"
+                required
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Alex Morgan"
+                className="block w-full pl-10 pr-4 py-2.5 border border-[#E2E8F0] rounded-xl bg-[#F8FAFC] text-[#131b2e] text-sm focus:bg-white focus:ring-2 focus:ring-[#004ac6]/20 focus:border-[#004ac6] placeholder:text-slate-400 transition-colors"
+              />
+            </div>
+          </div>
+
           <div>
             <label className="block text-xs font-semibold uppercase tracking-wider text-[#515f74] mb-1.5" htmlFor="email">
               Email Address
@@ -75,21 +90,16 @@ export default function LoginPage() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="user@fintrack.pro"
+                placeholder="alex.morgan@fintrack.pro"
                 className="block w-full pl-10 pr-4 py-2.5 border border-[#E2E8F0] rounded-xl bg-[#F8FAFC] text-[#131b2e] text-sm focus:bg-white focus:ring-2 focus:ring-[#004ac6]/20 focus:border-[#004ac6] placeholder:text-slate-400 transition-colors"
               />
             </div>
           </div>
 
           <div>
-            <div className="flex justify-between items-center mb-1.5">
-              <label className="block text-xs font-semibold uppercase tracking-wider text-[#515f74]" htmlFor="password">
-                Password
-              </label>
-              <Link href="/forgot-password" className="text-xs text-[#004ac6] hover:underline font-medium">
-                Forgot?
-              </Link>
-            </div>
+            <label className="block text-xs font-semibold uppercase tracking-wider text-[#515f74] mb-1.5" htmlFor="password">
+              Password
+            </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
                 <span className="material-symbols-outlined text-[20px]">lock</span>
@@ -98,15 +108,16 @@ export default function LoginPage() {
                 id="password"
                 type="password"
                 required
+                minLength={6}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
+                placeholder="Tối thiểu 6 ký tự"
                 className="block w-full pl-10 pr-4 py-2.5 border border-[#E2E8F0] rounded-xl bg-[#F8FAFC] text-[#131b2e] text-sm focus:bg-white focus:ring-2 focus:ring-[#004ac6]/20 focus:border-[#004ac6] placeholder:text-slate-400 transition-colors"
               />
             </div>
           </div>
 
-          <div className="pt-2">
+          <div className="pt-3">
             <button
               type="submit"
               disabled={loading}
@@ -115,12 +126,12 @@ export default function LoginPage() {
               {loading ? (
                 <>
                   <span className="material-symbols-outlined animate-spin text-[18px]">progress_activity</span>
-                  <span>Authenticating...</span>
+                  <span>Creating Account...</span>
                 </>
               ) : (
                 <>
-                  <span>Sign In</span>
-                  <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+                  <span>Sign Up</span>
+                  <span className="material-symbols-outlined text-[18px]">how_to_reg</span>
                 </>
               )}
             </button>
@@ -129,9 +140,9 @@ export default function LoginPage() {
 
         <div className="mt-6 pt-5 border-t border-[#E2E8F0] text-center">
           <p className="text-xs text-[#515f74]">
-              Don&apos;t have an account?{" "}
-            <Link href="/register" className="text-[#004ac6] font-semibold hover:underline">
-              Sign Up
+            Already have an account?{" "}
+            <Link href="/login" className="text-[#004ac6] font-semibold hover:underline">
+              Sign In
             </Link>
           </p>
         </div>

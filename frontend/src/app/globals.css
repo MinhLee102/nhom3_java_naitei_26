@@ -26,3 +26,17 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #9ca3af;
 }
+
+:root {
+  --color-border: #E2E8F0;
+  --color-primary: #004ac6;
+  --color-primary-container: #2563eb;
+  --color-primary-light: #eff4ff;
+  --color-secondary: #515f74;
+  --color-danger: #DC2626;
+  --color-background: #faf8ff;
+  --color-bg-subtle: #F8FAFC;
+  --color-surface: #FFFFFF;
+  --color-on-background: #131b2e;
+  --color-on-surface-variant: #434655;
+}

@@ -59,7 +59,7 @@ apiClient.interceptors.response.use(
     if (status === 401) {
       if (typeof window !== "undefined") {
         localStorage.removeItem("access_token");
-        window.location.href = "/login";
+        window.location.replace("/login");
       }
     }
 
