@@ -8,9 +8,10 @@ import Pagination from "@/components/ui/Pagination";
 import ExpensePaginationSummary from "@/features/expense/components/ExpensePaginationSummary";
 import ExpenseTable from "@/features/expense/components/ExpenseTable";
 import ExpenseFilters from "@/features/expense/components/ExpenseFilters";
+import ExpenseFormModal from "@/features/expense/components/ExpenseFormModal";
 import { toExpenseFilter, validateExpenseFilters } from "@/features/expense/filterUtils";
-import { useExpenseCategories, useExpenses } from "@/features/expense/hooks";
-import type { ExpenseFilterValues } from "@/features/expense/types";
+import { useExpense, useExpenseCategories, useExpenses } from "@/features/expense/hooks";
+import type { Expense, ExpenseFilterValues } from "@/features/expense/types";
 import { useDebounce } from "@/hooks/useDebounce";
 
 const PAGE_SIZE = 10;
@@ -31,6 +32,8 @@ const INITIAL_FILTERS: ExpenseFilterValues = {
 export default function ExpensesPage() {
   const router = useRouter();
   const [page, setPage] = useState(0);
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [editingExpense, setEditingExpense] = useState<Expense>();
   const [filters, setFilters] = useState(INITIAL_FILTERS);
   const debouncedSearch = useDebounce(filters.search, 300);
   const effectiveValues = { ...filters, search: debouncedSearch };
@@ -46,6 +49,7 @@ export default function ExpensesPage() {
     isFilterValid
   );
   const categoryQuery = useExpenseCategories();
+  const editingExpenseQuery = useExpense(editingExpense?.id ?? 0);
   const fallbackCategories = useMemo(() => {
     const categories = new Map<number, string>();
     data?.items.forEach((expense) => categories.set(expense.categoryId, expense.categoryName));
@@ -71,7 +75,7 @@ export default function ExpensesPage() {
           <h1 className="text-2xl font-bold text-gray-900">Chi tiêu</h1>
           <p className="text-sm text-gray-500 mt-1">Quản lý các khoản chi tiêu của bạn</p>
         </div>
-        <Button disabled title="Sắp có ở chức năng thêm/sửa chi tiêu">
+        <Button onClick={() => setIsCreateOpen(true)}>
           <Plus className="h-4 w-4" />
           Thêm chi tiêu
         </Button>
@@ -105,6 +109,7 @@ export default function ExpensesPage() {
                 hasActiveFilter ? "Không tìm thấy khoản chi phù hợp" : "Chưa có khoản chi tiêu nào"
               }
               onRowClick={(expense) => router.push(`/expenses/${expense.id}`)}
+              onEdit={setEditingExpense}
             />
 
             {!isLoading && data && (
@@ -127,6 +132,21 @@ export default function ExpensesPage() {
           </>
         )}
       </section>
+
+      <ExpenseFormModal
+        isOpen={isCreateOpen}
+        categories={categories}
+        onClose={() => setIsCreateOpen(false)}
+        onSuccess={() => refetch()}
+      />
+      <ExpenseFormModal
+        isOpen={Boolean(editingExpense)}
+        categories={categories}
+        expense={editingExpenseQuery.data ?? editingExpense}
+        isLoadingDetail={editingExpenseQuery.isLoading}
+        onClose={() => setEditingExpense(undefined)}
+        onSuccess={() => refetch()}
+      />
     </div>
   );
 }

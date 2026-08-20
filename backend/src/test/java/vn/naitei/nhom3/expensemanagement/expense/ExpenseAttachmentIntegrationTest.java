@@ -156,7 +156,46 @@ class ExpenseAttachmentIntegrationTest {
     }
 
     @Test
+    void shouldUpdateExpenseAndAppendFilesWithoutReplacingExistingAttachments() throws Exception {
+        JsonNode created = createExpense(tokenA, List.of(
+                file("old.jpg", "image/jpeg", new byte[]{1}),
+                file("old.pdf", "application/pdf", new byte[]{2})));
+        long expenseId = created.at("/data/id").asLong();
+
+        JsonNode updated = updateExpense(tokenA, expenseId, "Cơm trưa đã sửa", List.of(
+                file("new-1.png", "image/png", new byte[]{3}),
+                file("new-2.pdf", "application/pdf", new byte[]{4})));
+
+        assertThat(updated.at("/data/title").asText()).isEqualTo("Cơm trưa đã sửa");
+        assertThat(updated.at("/data/attachments").size()).isEqualTo(4);
+        assertThat(attachmentRepository.findByExpenseId(expenseId)).hasSize(4);
+        assertThat(listStoredFiles()).hasSize(4);
+    }
+
+    @Test
+    void shouldRollbackUpdateWhenCumulativeFileLimitIsExceeded() throws Exception {
+        JsonNode created = createExpense(tokenA, List.of(
+                file("1.jpg", "image/jpeg", new byte[]{1}),
+                file("2.jpg", "image/jpeg", new byte[]{2}),
+                file("3.jpg", "image/jpeg", new byte[]{3}),
+                file("4.jpg", "image/jpeg", new byte[]{4})));
+        long expenseId = created.at("/data/id").asLong();
+
+        assertThatThrownBy(() -> updateExpense(tokenA, expenseId, "Không được lưu", List.of(
+                file("5.jpg", "image/jpeg", new byte[]{5}),
+                file("6.jpg", "image/jpeg", new byte[]{6}))))
+                .isInstanceOf(HttpClientErrorException.BadRequest.class);
+
+        JsonNode detail = getExpense(tokenA, expenseId);
+        assertThat(detail.at("/data/title").asText()).isEqualTo("Cơm trưa");
+        assertThat(detail.at("/data/attachments").size()).isEqualTo(4);
+        assertThat(listStoredFiles()).hasSize(4);
+    }
+
+    @Test
     void shouldRejectInvalidMimeEmptyOversizedAndTooManyFilesWithoutSavingAnything() {
+        long attachmentCountBeforeRequests = attachmentRepository.count();
+
         assertUploadBadRequest(List.of(file("script.exe", "application/octet-stream", new byte[]{1})));
         assertUploadBadRequest(List.of(file("empty.jpg", "image/jpeg", new byte[0])));
         assertUploadBadRequest(List.of(file("large.pdf", "application/pdf", new byte[5 * 1024 * 1024 + 1])));
@@ -172,7 +211,7 @@ class ExpenseAttachmentIntegrationTest {
                 file("6.jpg", "image/jpeg", new byte[]{1})));
 
         assertThat(expenseRepository.findByUserId(userA.getId())).isEmpty();
-        assertThat(attachmentRepository.findAll()).isEmpty();
+        assertThat(attachmentRepository.count()).isEqualTo(attachmentCountBeforeRequests);
         assertThat(listStoredFiles()).isEmpty();
     }
 
@@ -264,6 +303,29 @@ class ExpenseAttachmentIntegrationTest {
         String response = restClient.get()
                 .uri("/api/expenses/{id}", expenseId)
                 .header(HttpHeaders.AUTHORIZATION, bearer(token))
+                .retrieve()
+                .body(String.class);
+        return objectMapper.readTree(response);
+    }
+
+    private JsonNode updateExpense(
+            String token,
+            long expenseId,
+            String title,
+            List<HttpEntity<ByteArrayResource>> files) throws Exception {
+        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+        HttpHeaders dataHeaders = new HttpHeaders();
+        dataHeaders.setContentType(MediaType.APPLICATION_JSON);
+        String data = "{\"title\":\"" + title + "\",\"amount\":50000,\"date\":\"2026-08-14\","
+                + "\"categoryId\":" + category.getId() + ",\"note\":\"ok\"}";
+        body.add("data", new HttpEntity<>(data, dataHeaders));
+        files.forEach(file -> body.add("files", file));
+
+        String response = restClient.put()
+                .uri("/api/expenses/{id}", expenseId)
+                .header(HttpHeaders.AUTHORIZATION, bearer(token))
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .body(body)
                 .retrieve()
                 .body(String.class);
         return objectMapper.readTree(response);

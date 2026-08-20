@@ -46,4 +46,15 @@ describe("ExpenseTable", () => {
     fireEvent.keyDown(screen.getByText("Cơm trưa").closest("tr")!, { key: "Enter" });
     expect(onRowClick).toHaveBeenCalledWith(expense);
   });
+
+  it("mở edit mà không kích hoạt click row", () => {
+    const onRowClick = vi.fn();
+    const onEdit = vi.fn();
+    render(<ExpenseTable expenses={[expense]} onRowClick={onRowClick} onEdit={onEdit} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Sửa Cơm trưa" }));
+
+    expect(onEdit).toHaveBeenCalledWith(expense);
+    expect(onRowClick).not.toHaveBeenCalled();
+  });
 });

@@ -6,6 +6,8 @@ const push = vi.fn();
 const refetch = vi.fn();
 const useExpensesMock = vi.fn();
 const useExpenseCategoriesMock = vi.fn();
+const createMutate = vi.fn();
+const updateMutate = vi.fn();
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ push }),
@@ -14,6 +16,10 @@ vi.mock("next/navigation", () => ({
 vi.mock("@/features/expense/hooks", () => ({
   useExpenses: (filter: unknown, enabled: boolean) => useExpensesMock(filter, enabled),
   useExpenseCategories: () => useExpenseCategoriesMock(),
+  useExpense: () => ({ data: undefined, isLoading: false }),
+  useCreateExpense: () => ({ mutate: createMutate, isPending: false }),
+  useUpdateExpense: () => ({ mutate: updateMutate, isPending: false }),
+  useDeleteExpenseAttachment: () => ({ mutate: vi.fn(), isPending: false }),
 }));
 
 const expense = {
@@ -49,7 +55,7 @@ describe("ExpensesPage", () => {
       true
     );
     expect(screen.getByLabelText("Đang tải danh sách chi tiêu")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /Thêm chi tiêu/i })).toBeDisabled();
+    expect(screen.getByRole("button", { name: /Thêm chi tiêu/i })).toBeEnabled();
   });
 
   it("hiển thị lỗi và cho phép thử lại", () => {
@@ -110,6 +116,23 @@ describe("ExpensesPage", () => {
 
     fireEvent.click(screen.getByText("Cơm trưa"));
     expect(push).toHaveBeenCalledWith("/expenses/12");
+  });
+
+  it("mở modal sửa từ nút thao tác của row", () => {
+    useExpensesMock.mockReturnValue({
+      data: { items: [expense], page: 0, size: 10, totalItems: 1, totalPages: 1 },
+      isLoading: false,
+      isFetching: false,
+      isError: false,
+      refetch,
+    });
+
+    render(<ExpensesPage />);
+    fireEvent.click(screen.getByRole("button", { name: "Sửa Cơm trưa" }));
+
+    expect(screen.getByRole("heading", { name: "Sửa khoản chi" })).toBeInTheDocument();
+    expect(screen.getByLabelText("Tên khoản chi")).toHaveValue("Cơm trưa");
+    expect(push).not.toHaveBeenCalled();
   });
 
   it("debounce search, trim query và reset pagination về page 0", async () => {

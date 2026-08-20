@@ -78,12 +78,23 @@ public class ExpenseController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
-    @PutMapping("/{id}")
+    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ApiResponse<ExpenseResponse>> update(
             @AuthenticationPrincipal UserPrincipal principal,
             @PathVariable Long id,
             @Valid @RequestBody ExpenseRequest request) {
         ExpenseResponse response = expenseService.update(principal.getId(), id, request);
+        return ResponseEntity.ok(ApiResponse.success("Cập nhật thành công", response));
+    }
+
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ApiResponse<ExpenseResponse>> updateWithAttachments(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @PathVariable Long id,
+            @Valid @RequestPart("data") ExpenseRequest request,
+            @RequestPart(value = "files", required = false) MultipartFile[] files) {
+        List<MultipartFile> attachments = files == null ? List.of() : Arrays.asList(files);
+        ExpenseResponse response = expenseService.update(principal.getId(), id, request, attachments);
         return ResponseEntity.ok(ApiResponse.success("Cập nhật thành công", response));
     }
 

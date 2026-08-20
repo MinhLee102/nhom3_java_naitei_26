@@ -61,3 +61,52 @@ describe("expenseApi.getAll", () => {
     expect(result.data.totalItems).toBe(42);
   });
 });
+
+describe("expenseApi mutations", () => {
+  const data = {
+    title: "Cơm trưa",
+    amount: 50000,
+    date: "2026-08-14",
+    categoryId: 3,
+  };
+
+  beforeEach(() => vi.clearAllMocks());
+
+  it("gửi JSON khi create không có file", async () => {
+    await expenseApi.create({ data, files: [] });
+    expect(apiClient.post).toHaveBeenCalledWith("/expenses", data);
+  });
+
+  it("gửi multipart data/files khi create có file", async () => {
+    const file = new File(["bill"], "bill.pdf", { type: "application/pdf" });
+    await expenseApi.create({ data, files: [file] });
+
+    const formData = vi.mocked(apiClient.post).mock.calls[0][1] as FormData;
+    expect(formData.get("data")).toBeInstanceOf(Blob);
+    expect(formData.getAll("files")).toEqual([file]);
+    expect(vi.mocked(apiClient.post).mock.calls[0][2]).toEqual({
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+  });
+
+  it("gửi PUT multipart khi edit thêm file", async () => {
+    const file = new File(["bill"], "bill.jpg", { type: "image/jpeg" });
+    await expenseApi.update(12, { data, files: [file] });
+
+    expect(apiClient.put).toHaveBeenCalledWith(
+      "/expenses/12",
+      expect.any(FormData),
+      expect.objectContaining({ headers: { "Content-Type": "multipart/form-data" } })
+    );
+  });
+
+  it("gọi đúng API xem và xóa attachment", async () => {
+    await expenseApi.downloadAttachment(12, 7);
+    await expenseApi.deleteAttachment(12, 7);
+
+    expect(apiClient.get).toHaveBeenCalledWith("/expenses/12/attachments/7/download", {
+      responseType: "blob",
+    });
+    expect(apiClient.delete).toHaveBeenCalledWith("/expenses/12/attachments/7");
+  });
+});

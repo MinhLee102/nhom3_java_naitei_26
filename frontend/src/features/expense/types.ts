@@ -13,6 +13,13 @@ export interface Expense {
   categoryName: string;
   createdAt?: string;
   updatedAt?: string | null;
+  attachments?: ExpenseAttachment[];
+}
+
+export interface ExpenseAttachment {
+  id: number;
+  fileName: string;
+  fileUrl: string;
 }
 
 export interface CreateExpenseDto {
@@ -23,7 +30,12 @@ export interface CreateExpenseDto {
   note?: string;
 }
 
-export type UpdateExpenseDto = Partial<CreateExpenseDto>;
+export type UpdateExpenseDto = CreateExpenseDto;
+
+export interface ExpenseMutationInput {
+  data: CreateExpenseDto;
+  files: File[];
+}
 
 export interface ExpenseFilter {
   categoryId?: number;

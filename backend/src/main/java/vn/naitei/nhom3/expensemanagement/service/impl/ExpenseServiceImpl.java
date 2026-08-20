@@ -95,13 +95,27 @@ public class ExpenseServiceImpl implements ExpenseService {
     @Override
     @Transactional
     public ExpenseResponse update(Long userId, Long id, ExpenseRequest request) {
+        Expense expense = updateExpense(userId, id, request);
+        return ExpenseMapper.toResponse(expense, attachmentService.getAll(expense.getId()));
+    }
+
+    @Override
+    @Transactional
+    public ExpenseResponse update(
+            Long userId, Long id, ExpenseRequest request, List<MultipartFile> files) {
+        Expense expense = updateExpense(userId, id, request);
+        attachmentService.saveAll(expense, files);
+        return ExpenseMapper.toResponse(expense, attachmentService.getAll(expense.getId()));
+    }
+
+    private Expense updateExpense(Long userId, Long id, ExpenseRequest request) {
         Expense expense = findOwnedExpense(userId, id);
         Category category = validateCategory(userId, request.getCategoryId());
 
         expense.setCategory(category);
         updateExpense(expense, request);
 
-        return ExpenseMapper.toResponse(expenseRepository.save(expense));
+        return expenseRepository.save(expense);
     }
 
     @Override

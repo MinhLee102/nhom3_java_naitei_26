@@ -6,7 +6,7 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { expenseApi } from "./api";
 import { expenseCategoryApi } from "./categoryApi";
-import type { CreateExpenseDto, UpdateExpenseDto, ExpenseFilter } from "./types";
+import type { ExpenseFilter, ExpenseMutationInput } from "./types";
 
 const QUERY_KEY = "expenses";
 
@@ -38,7 +38,7 @@ export function useExpense(id: number) {
 export function useCreateExpense() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (data: CreateExpenseDto) => expenseApi.create(data),
+    mutationFn: (input: ExpenseMutationInput) => expenseApi.create(input),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [QUERY_KEY] });
     },
@@ -48,8 +48,8 @@ export function useCreateExpense() {
 export function useUpdateExpense() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, data }: { id: number; data: UpdateExpenseDto }) =>
-      expenseApi.update(id, data),
+    mutationFn: ({ id, input }: { id: number; input: ExpenseMutationInput }) =>
+      expenseApi.update(id, input),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [QUERY_KEY] });
     },
@@ -61,6 +61,18 @@ export function useDeleteExpense() {
   return useMutation({
     mutationFn: (id: number) => expenseApi.delete(id),
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEY] });
+    },
+  });
+}
+
+export function useDeleteExpenseAttachment() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ expenseId, attachmentId }: { expenseId: number; attachmentId: number }) =>
+      expenseApi.deleteAttachment(expenseId, attachmentId),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEY, variables.expenseId] });
       queryClient.invalidateQueries({ queryKey: [QUERY_KEY] });
     },
   });

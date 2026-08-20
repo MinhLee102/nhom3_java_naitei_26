@@ -20,5 +20,7 @@ public interface ExpenseService {
 
     ExpenseResponse update(Long userId, Long id, ExpenseRequest request);
 
+    ExpenseResponse update(Long userId, Long id, ExpenseRequest request, List<MultipartFile> files);
+
     void delete(Long userId, Long id);
 }

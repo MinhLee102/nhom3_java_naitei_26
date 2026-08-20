@@ -1,4 +1,4 @@
-import { ReceiptText } from "lucide-react";
+import { Pencil, ReceiptText } from "lucide-react";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import type { Expense } from "../types";
 
@@ -7,6 +7,7 @@ interface ExpenseTableProps {
   isLoading?: boolean;
   emptyMessage?: string;
   onRowClick: (expense: Expense) => void;
+  onEdit?: (expense: Expense) => void;
 }
 
 export default function ExpenseTable({
@@ -14,6 +15,7 @@ export default function ExpenseTable({
   isLoading = false,
   emptyMessage = "Chưa có khoản chi tiêu nào",
   onRowClick,
+  onEdit,
 }: ExpenseTableProps) {
   if (isLoading) {
     return (
@@ -43,12 +45,17 @@ export default function ExpenseTable({
             <th scope="col" className="px-6 py-3.5">
               Ngày chi
             </th>
+            {onEdit && (
+              <th scope="col" className="px-6 py-3.5 text-right">
+                Thao tác
+              </th>
+            )}
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-200 bg-white">
           {expenses.length === 0 ? (
             <tr>
-              <td colSpan={4} className="px-6 py-12 text-center text-sm text-gray-500">
+              <td colSpan={onEdit ? 5 : 4} className="px-6 py-12 text-center text-sm text-gray-500">
                 <ReceiptText className="mx-auto mb-3 h-8 w-8 text-gray-300" aria-hidden="true" />
                 {emptyMessage}
               </td>
@@ -77,6 +84,21 @@ export default function ExpenseTable({
                   {formatCurrency(expense.amount)}
                 </td>
                 <td className="px-6 py-4 text-gray-600">{formatDate(expense.date)}</td>
+                {onEdit && (
+                  <td className="px-6 py-4 text-right">
+                    <button
+                      type="button"
+                      aria-label={`Sửa ${expense.title}`}
+                      className="rounded-lg p-2 text-gray-500 hover:bg-blue-50 hover:text-blue-700"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        onEdit(expense);
+                      }}
+                    >
+                      <Pencil className="h-4 w-4" aria-hidden="true" />
+                    </button>
+                  </td>
+                )}
               </tr>
             ))
           )}
