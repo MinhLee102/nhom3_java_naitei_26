@@ -10,8 +10,7 @@
     "lint:fix": "eslint --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "test": "vitest run"
-    "format:check": "prettier --check .",
+    "test": "vitest run",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },
@@ -48,8 +47,6 @@
     "jsdom": "^30.0.1",
     "prettier": "^3.9.6",
     "tailwindcss": "^4",
-    "typescript": "^5",
-    "vitest": "^4.1.11"
     "typescript": "^5",
     "storybook": "^10.5.9",
     "@storybook/nextjs-vite": "^10.5.9",
