@@ -101,6 +101,11 @@ export default function BudgetTemplateForm({ mode, id }: BudgetTemplateFormProps
           : detail
       ),
     }));
+    setErrors((current) => {
+      const nextErrors = { ...current };
+      delete nextErrors[`details.${index}.${field}`];
+      return nextErrors;
+    });
   };
 
   const validate = () => {
@@ -131,6 +136,24 @@ export default function BudgetTemplateForm({ mode, id }: BudgetTemplateFormProps
         nextErrors[`details.${index}.amount`] = "Amount must be positive";
       }
     });
+
+    const duplicateCategoryIds = new Set<string>();
+    const uniqueCategoryIds = new Set<string>();
+    values.details.forEach((detail) => {
+      if (!detail.categoryId) return;
+      const categoryId = String(detail.categoryId);
+      if (uniqueCategoryIds.has(categoryId)) {
+        duplicateCategoryIds.add(categoryId);
+      }
+      uniqueCategoryIds.add(categoryId);
+    });
+    if (duplicateCategoryIds.size > 0) {
+      values.details.forEach((detail, index) => {
+        if (duplicateCategoryIds.has(String(detail.categoryId))) {
+          nextErrors[`details.${index}.categoryId`] = "Each category can only be selected once";
+        }
+      });
+    }
 
     setErrors(nextErrors);
     return Object.keys(nextErrors).length === 0;

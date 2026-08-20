@@ -1,5 +1,8 @@
 package vn.naitei.nhom3.expensemanagement.dto.budgettemplate;
 
+import java.util.List;
+import java.util.Objects;
+
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.Max;
@@ -10,8 +13,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.List;
 
 @Getter
 @Setter
@@ -40,5 +41,22 @@ public class BudgetTemplateCreateRequest {
     @AssertTrue(message = "Warning percentage must be a multiple of 5")
     public boolean isWarningPercentageStepValid() {
         return warningPercentage == null || warningPercentage % WARNING_PERCENTAGE_STEP == 0;
+    }
+
+    @AssertTrue(message = "Each category can only appear once in details")
+    public boolean isUniqueCategoryDetails() {
+        if (details == null || details.isEmpty()) {
+            return true;
+        }
+        long nonNullCategoryCount = details.stream()
+                .map(BudgetTemplateDetailRequest::getCategoryId)
+                .filter(Objects::nonNull)
+                .count();
+        long distinctCategoryCount = details.stream()
+                .map(BudgetTemplateDetailRequest::getCategoryId)
+                .filter(Objects::nonNull)
+                .distinct()
+                .count();
+        return nonNullCategoryCount == distinctCategoryCount;
     }
 }
