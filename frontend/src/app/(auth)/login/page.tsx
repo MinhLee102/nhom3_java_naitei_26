@@ -21,6 +21,7 @@ export default function LoginPage() {
       const res = await apiClient.post("/auth/login", { email, password });
       const { token, refreshToken, user } = res.data;
 
+      document.cookie = `access_token=${token}; path=/; max-age=86400; SameSite=Lax`;
       localStorage.setItem("access_token", token);
       if (refreshToken) localStorage.setItem("refresh_token", refreshToken);
       localStorage.setItem("user", JSON.stringify(user));
