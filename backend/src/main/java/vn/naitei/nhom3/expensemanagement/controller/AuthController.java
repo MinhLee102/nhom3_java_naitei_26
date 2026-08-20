@@ -10,9 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import vn.naitei.nhom3.expensemanagement.common.response.ApiResponse;
-import vn.naitei.nhom3.expensemanagement.dto.auth.AuthResponse;
-import vn.naitei.nhom3.expensemanagement.dto.auth.LoginRequest;
-import vn.naitei.nhom3.expensemanagement.dto.auth.RegisterRequest;
+import vn.naitei.nhom3.expensemanagement.dto.auth.*;
 import vn.naitei.nhom3.expensemanagement.security.UserPrincipal;
 import vn.naitei.nhom3.expensemanagement.service.AuthService;
 
@@ -40,5 +38,11 @@ public class AuthController {
     public ResponseEntity<ApiResponse<Void>> logout(@AuthenticationPrincipal UserPrincipal principal) {
         authService.logout(principal);
         return ResponseEntity.ok(ApiResponse.success("Đăng xuất thành công", null));
+    }
+
+    @PostMapping("/refresh-token")
+    public ResponseEntity<ApiResponse<RefreshTokenResponse>> refreshToken(@Valid @RequestBody RefreshTokenRequest request) {
+        RefreshTokenResponse response = authService.refreshToken(request);
+        return ResponseEntity.ok(ApiResponse.success("Làm mới token thành công", response));
     }
 }

@@ -12,9 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import vn.naitei.nhom3.expensemanagement.dto.auth.AuthResponse;
-import vn.naitei.nhom3.expensemanagement.dto.auth.LoginRequest;
-import vn.naitei.nhom3.expensemanagement.dto.auth.RegisterRequest;
+import vn.naitei.nhom3.expensemanagement.dto.auth.*;
 import vn.naitei.nhom3.expensemanagement.entity.User;
 import vn.naitei.nhom3.expensemanagement.entity.enums.Role;
 import vn.naitei.nhom3.expensemanagement.entity.enums.UserStatus;
@@ -67,9 +65,11 @@ public class AuthServiceImpl implements AuthService {
         // Sinh JWT và trả về thông tin đăng nhập
         UserPrincipal principal = new UserPrincipal(user);
         String token = jwtTokenProvider.generateToken(principal);
+        String refreshToken = jwtTokenProvider.generateRefreshToken(principal);
 
         return AuthResponse.builder()
                 .token(token)
+                .refreshToken(refreshToken)
                 .user(AuthResponse.UserDto.builder()
                         .id(user.getId())
                         .name(user.getName())
@@ -93,11 +93,12 @@ public class AuthServiceImpl implements AuthService {
         }
 
         UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
-        String token = jwtTokenProvider.generateToken(principal);
 
         User user = userRepository.findById(principal.getId())
                 .orElseThrow(() -> new BadCredentialsException("Không tìm thấy thông tin tài khoản"));
 
+
+        // Activity Log (Change here when ActivityLogService is available)
         if (activityLogService != null) {
             try {
                 activityLogService.log(user.getId(), "LOGIN", "USER", user.getId(), "Đăng nhập hệ thống");
@@ -106,8 +107,12 @@ public class AuthServiceImpl implements AuthService {
             }
         }
 
+        String token = jwtTokenProvider.generateToken(principal);
+        String refreshToken = jwtTokenProvider.generateRefreshToken(principal);
+
         return AuthResponse.builder()
                 .token(token)
+                .refreshToken(refreshToken)
                 .user(AuthResponse.UserDto.builder()
                         .id(user.getId())
                         .name(user.getName())
@@ -126,5 +131,36 @@ public class AuthServiceImpl implements AuthService {
                 log.warn("Không thể ghi log logout: {}", e.getMessage());
             }
         }
+    }
+
+    @Override
+    public RefreshTokenResponse refreshToken(RefreshTokenRequest request) {
+        String refreshToken = request.getRefreshToken();
+
+        if (!jwtTokenProvider.validateToken(refreshToken)) {
+            throw new IllegalArgumentException("Refresh token không hợp lệ hoặc đã hết hạn");
+        }
+
+        String tokenType = jwtTokenProvider.getTokenType(refreshToken);
+        if (!"REFRESH".equals(tokenType)) {
+            throw new IllegalArgumentException("Token cung cấp không phải là Refresh Token");
+        }
+
+        String email = jwtTokenProvider.getEmailFromToken(refreshToken);
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("Người dùng không tồn tại"));
+
+        if (user.getStatus() != UserStatus.ACTIVE) {
+            throw new IllegalArgumentException("Tài khoản đã bị khóa hoặc chưa kích hoạt");
+        }
+
+        UserPrincipal principal = new UserPrincipal(user);
+        String newAccessToken = jwtTokenProvider.generateToken(principal);
+        String newRefreshToken = jwtTokenProvider.generateRefreshToken(principal);
+
+        return RefreshTokenResponse.builder()
+                .accessToken(newAccessToken)
+                .refreshToken(newRefreshToken)
+                .build();
     }
 }
