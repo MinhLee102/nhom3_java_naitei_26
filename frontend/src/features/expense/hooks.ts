@@ -5,15 +5,25 @@
  */
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { expenseApi } from "./api";
+import { expenseCategoryApi } from "./categoryApi";
 import type { CreateExpenseDto, UpdateExpenseDto, ExpenseFilter } from "./types";
 
 const QUERY_KEY = "expenses";
 
-export function useExpenses(filter?: ExpenseFilter) {
+export function useExpenses(filter?: ExpenseFilter, enabled: boolean = true) {
   return useQuery({
     queryKey: [QUERY_KEY, filter],
     queryFn: () => expenseApi.getAll(filter).then((res) => res.data),
     placeholderData: keepPreviousData,
+    enabled,
+  });
+}
+
+export function useExpenseCategories() {
+  return useQuery({
+    queryKey: [QUERY_KEY, "categories"],
+    queryFn: () => expenseCategoryApi.getExpenseCategories().then((res) => res.data),
+    retry: false,
   });
 }
 

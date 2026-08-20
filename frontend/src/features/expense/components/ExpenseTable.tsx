@@ -5,12 +5,14 @@ import type { Expense } from "../types";
 interface ExpenseTableProps {
   expenses: Expense[];
   isLoading?: boolean;
+  emptyMessage?: string;
   onRowClick: (expense: Expense) => void;
 }
 
 export default function ExpenseTable({
   expenses,
   isLoading = false,
+  emptyMessage = "Chưa có khoản chi tiêu nào",
   onRowClick,
 }: ExpenseTableProps) {
   if (isLoading) {
@@ -48,7 +50,7 @@ export default function ExpenseTable({
             <tr>
               <td colSpan={4} className="px-6 py-12 text-center text-sm text-gray-500">
                 <ReceiptText className="mx-auto mb-3 h-8 w-8 text-gray-300" aria-hidden="true" />
-                Chưa có khoản chi tiêu nào
+                {emptyMessage}
               </td>
             </tr>
           ) : (

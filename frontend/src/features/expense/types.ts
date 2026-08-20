@@ -44,3 +44,17 @@ export interface ExpensePageResponse {
   totalItems: number;
   totalPages: number;
 }
+
+export interface ExpenseCategoryOption {
+  id: number;
+  name: string;
+}
+
+export interface ExpenseFilterValues {
+  search: string;
+  categoryId: string;
+  fromDate: string;
+  toDate: string;
+  minAmount: string;
+  maxAmount: string;
+}

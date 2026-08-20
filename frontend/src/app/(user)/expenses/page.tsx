@@ -1,16 +1,28 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AlertCircle, Plus } from "lucide-react";
 import Button from "@/components/ui/Button";
 import Pagination from "@/components/ui/Pagination";
 import ExpensePaginationSummary from "@/features/expense/components/ExpensePaginationSummary";
 import ExpenseTable from "@/features/expense/components/ExpenseTable";
-import { useExpenses } from "@/features/expense/hooks";
+import ExpenseFilters from "@/features/expense/components/ExpenseFilters";
+import { toExpenseFilter, validateExpenseFilters } from "@/features/expense/filterUtils";
+import { useExpenseCategories, useExpenses } from "@/features/expense/hooks";
+import type { ExpenseFilterValues } from "@/features/expense/types";
+import { useDebounce } from "@/hooks/useDebounce";
 
 const PAGE_SIZE = 10;
 const DEFAULT_SORT = "date,desc";
+const INITIAL_FILTERS: ExpenseFilterValues = {
+  search: "",
+  categoryId: "",
+  fromDate: "",
+  toDate: "",
+  minAmount: "",
+  maxAmount: "",
+};
 
 /**
  * Trang danh sách Chi tiêu.
@@ -19,11 +31,38 @@ const DEFAULT_SORT = "date,desc";
 export default function ExpensesPage() {
   const router = useRouter();
   const [page, setPage] = useState(0);
-  const { data, isLoading, isFetching, isError, refetch } = useExpenses({
-    page,
-    size: PAGE_SIZE,
-    sort: DEFAULT_SORT,
-  });
+  const [filters, setFilters] = useState(INITIAL_FILTERS);
+  const debouncedSearch = useDebounce(filters.search, 300);
+  const effectiveValues = { ...filters, search: debouncedSearch };
+  const filterErrors = validateExpenseFilters(effectiveValues);
+  const isFilterValid = Object.keys(filterErrors).length === 0;
+  const { data, isLoading, isFetching, isError, refetch } = useExpenses(
+    {
+      page,
+      size: PAGE_SIZE,
+      sort: DEFAULT_SORT,
+      ...toExpenseFilter(effectiveValues),
+    },
+    isFilterValid
+  );
+  const categoryQuery = useExpenseCategories();
+  const fallbackCategories = useMemo(() => {
+    const categories = new Map<number, string>();
+    data?.items.forEach((expense) => categories.set(expense.categoryId, expense.categoryName));
+    return Array.from(categories, ([id, name]) => ({ id, name }));
+  }, [data?.items]);
+  const categories = categoryQuery.data?.length ? categoryQuery.data : fallbackCategories;
+  const hasActiveFilter = Object.values(filters).some(Boolean);
+
+  const changeFilter = (field: keyof ExpenseFilterValues, value: string) => {
+    setFilters((current) => ({ ...current, [field]: value }));
+    setPage(0);
+  };
+
+  const resetFilters = () => {
+    setFilters(INITIAL_FILTERS);
+    setPage(0);
+  };
 
   return (
     <div className="space-y-6">
@@ -37,6 +76,15 @@ export default function ExpensesPage() {
           Thêm chi tiêu
         </Button>
       </div>
+
+      <ExpenseFilters
+        values={filters}
+        categories={categories}
+        errors={filterErrors}
+        isCategoryFallback={categoryQuery.isError && fallbackCategories.length > 0}
+        onChange={changeFilter}
+        onReset={resetFilters}
+      />
 
       <section className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
         {isError ? (
@@ -53,6 +101,9 @@ export default function ExpensesPage() {
             <ExpenseTable
               expenses={data?.items ?? []}
               isLoading={isLoading}
+              emptyMessage={
+                hasActiveFilter ? "Không tìm thấy khoản chi phù hợp" : "Chưa có khoản chi tiêu nào"
+              }
               onRowClick={(expense) => router.push(`/expenses/${expense.id}`)}
             />
 

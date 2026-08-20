@@ -1,17 +1,19 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import ExpensesPage from "./page";
 
 const push = vi.fn();
 const refetch = vi.fn();
 const useExpensesMock = vi.fn();
+const useExpenseCategoriesMock = vi.fn();
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ push }),
 }));
 
 vi.mock("@/features/expense/hooks", () => ({
-  useExpenses: (filter: unknown) => useExpensesMock(filter),
+  useExpenses: (filter: unknown, enabled: boolean) => useExpensesMock(filter, enabled),
+  useExpenseCategories: () => useExpenseCategoriesMock(),
 }));
 
 const expense = {
@@ -26,7 +28,10 @@ const expense = {
 describe("ExpensesPage", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    useExpenseCategoriesMock.mockReturnValue({ data: [], isError: true });
   });
+
+  afterEach(() => vi.useRealTimers());
 
   it("gọi hook với page 0, size 10, sort mặc định và hiển thị loading", () => {
     useExpensesMock.mockReturnValue({
@@ -39,7 +44,10 @@ describe("ExpensesPage", () => {
 
     render(<ExpensesPage />);
 
-    expect(useExpensesMock).toHaveBeenCalledWith({ page: 0, size: 10, sort: "date,desc" });
+    expect(useExpensesMock).toHaveBeenCalledWith(
+      expect.objectContaining({ page: 0, size: 10, sort: "date,desc" }),
+      true
+    );
     expect(screen.getByLabelText("Đang tải danh sách chi tiêu")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Thêm chi tiêu/i })).toBeDisabled();
   });
@@ -94,10 +102,92 @@ describe("ExpensesPage", () => {
     fireEvent.click(screen.getByRole("button", { name: "2" }));
 
     await waitFor(() => {
-      expect(useExpensesMock).toHaveBeenLastCalledWith({ page: 1, size: 10, sort: "date,desc" });
+      expect(useExpensesMock).toHaveBeenLastCalledWith(
+        expect.objectContaining({ page: 1, size: 10, sort: "date,desc" }),
+        true
+      );
     });
 
     fireEvent.click(screen.getByText("Cơm trưa"));
     expect(push).toHaveBeenCalledWith("/expenses/12");
+  });
+
+  it("debounce search, trim query và reset pagination về page 0", async () => {
+    vi.useFakeTimers();
+    useExpensesMock.mockImplementation((filter: { page: number }) => ({
+      data: { items: [expense], page: filter.page, size: 10, totalItems: 11, totalPages: 2 },
+      isLoading: false,
+      isFetching: false,
+      isError: false,
+      refetch,
+    }));
+
+    render(<ExpensesPage />);
+    fireEvent.click(screen.getByRole("button", { name: "2" }));
+    fireEvent.change(screen.getByLabelText("Tìm theo tên khoản chi"), {
+      target: { value: "  cơm  " },
+    });
+
+    expect(useExpensesMock).not.toHaveBeenLastCalledWith(
+      expect.objectContaining({ search: "cơm" }),
+      true
+    );
+    act(() => vi.advanceTimersByTime(300));
+
+    expect(useExpensesMock).toHaveBeenLastCalledWith(
+      expect.objectContaining({ page: 0, search: "cơm" }),
+      true
+    );
+  });
+
+  it("gửi đúng filter và không gửi userId", () => {
+    useExpensesMock.mockReturnValue({
+      data: { items: [expense], page: 0, size: 10, totalItems: 1, totalPages: 1 },
+      isLoading: false,
+      isFetching: false,
+      isError: false,
+      refetch,
+    });
+    render(<ExpensesPage />);
+
+    fireEvent.change(screen.getByLabelText("Danh mục"), { target: { value: "3" } });
+    fireEvent.change(screen.getByLabelText("Từ ngày"), { target: { value: "2026-08-01" } });
+    fireEvent.change(screen.getByLabelText("Đến ngày"), { target: { value: "2026-08-31" } });
+    fireEvent.change(screen.getByLabelText("Số tiền tối thiểu"), { target: { value: "10000" } });
+    fireEvent.change(screen.getByLabelText("Số tiền tối đa"), { target: { value: "200000" } });
+
+    const lastFilter = useExpensesMock.mock.lastCall?.[0];
+    expect(lastFilter).toBeDefined();
+    expect(lastFilter).toEqual(
+      expect.objectContaining({
+        page: 0,
+        categoryId: 3,
+        fromDate: "2026-08-01",
+        toDate: "2026-08-31",
+        minAmount: 10000,
+        maxAmount: 200000,
+      })
+    );
+    expect(lastFilter).not.toHaveProperty("userId");
+  });
+
+  it("không bật request khi khoảng lọc không hợp lệ và reset được filter", () => {
+    useExpensesMock.mockReturnValue({
+      data: { items: [], page: 0, size: 10, totalItems: 0, totalPages: 0 },
+      isLoading: false,
+      isFetching: false,
+      isError: false,
+      refetch,
+    });
+    render(<ExpensesPage />);
+
+    fireEvent.change(screen.getByLabelText("Từ ngày"), { target: { value: "2026-08-20" } });
+    fireEvent.change(screen.getByLabelText("Đến ngày"), { target: { value: "2026-08-01" } });
+    expect(screen.getByText("Ngày bắt đầu không được sau ngày kết thúc")).toBeInTheDocument();
+    expect(useExpensesMock.mock.lastCall?.[1]).toBe(false);
+
+    fireEvent.click(screen.getByRole("button", { name: "Đặt lại" }));
+    expect(screen.getByLabelText("Từ ngày")).toHaveValue("");
+    expect(useExpensesMock.mock.lastCall?.[1]).toBe(true);
   });
 });
