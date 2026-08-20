@@ -1,44 +1,93 @@
 import React from "react";
 
-/**
- * Auth Layout — tối giản, không header/sidebar.
- * Nhúng Material Symbols và style giao diện khung cho toàn bộ luồng Auth.
- */
 export default function AuthLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <>
-      <style>{`@import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=optional");`}</style>
-
-      <div className="flex min-h-screen items-center justify-center bg-[#F8FAFC] p-4">
-        <main className="w-full max-w-105">
-          {/* Logo Header chung cho Auth */}
-          <div className="text-center mb-8">
-            <div className="inline-flex justify-center items-center gap-2.5 mb-4">
-              <div className="w-11 h-11 rounded-xl bg-linear-to-br from-[#004ac6] to-[#2563eb] text-white flex items-center justify-center font-bold text-2xl shadow-md">
-                <span className="material-symbols-outlined text-[26px]">
-                  account_balance_wallet
-                </span>
-              </div>
-              <h1 className="text-2xl font-bold text-[#004ac6] tracking-tight">
-                FinTrack Pro
-              </h1>
+    <div
+      style={{
+        minHeight: "100vh",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: "#f8fafc",
+        padding: "1.5rem",
+        fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+      }}
+    >
+      <main style={{ width: "100%", maxWidth: "440px" }}>
+        {/* Logo Header */}
+        <div style={{ textAlign: "center", marginBottom: "1.75rem" }}>
+          <div
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: "0.625rem",
+              marginBottom: "1rem",
+            }}
+          >
+            {/* Logo chiếc ví FinTrack Pro */}
+            <div
+              style={{
+                width: "44px",
+                height: "44px",
+                borderRadius: "12px",
+                background: "linear-gradient(135deg, #004ac6, #2563eb)",
+                color: "#ffffff",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                boxShadow: "0 4px 6px -1px rgba(0, 74, 198, 0.25)",
+              }}
+            >
+              <svg
+                width="26"
+                height="26"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                {/* Viền ngoài ví */}
+                <rect x="2" y="5" width="20" height="15" rx="3" />
+                {/* Miệng nắp ví */}
+                <path d="M2 9h20" />
+                {/* Khóa ví */}
+                <rect x="14" y="11" width="6" height="5" rx="1.5" fill="currentColor" />
+                <circle cx="16.5" cy="13.5" r="0.75" fill="#004ac6" />
+              </svg>
             </div>
-          </div>
 
-          {children}
-
-          {/* Footer*/}
-          <div className="mt-8 text-center">
-            <p className="text-xs text-slate-400">
-              © 2026 FinTrack Pro. All rights reserved.
-            </p>
+            <h1
+              style={{
+                fontSize: "1.5rem",
+                fontWeight: "700",
+                color: "#004ac6",
+                letterSpacing: "-0.025em",
+                margin: 0,
+              }}
+            >
+              FinTrack Pro
+            </h1>
           </div>
-        </main>
-      </div>
-    </>
+        </div>
+
+        {/* Nội dung form các trang */}
+        {children}
+
+        {/* Footer */}
+        <div style={{ textAlign: "center", marginTop: "2rem" }}>
+          <p style={{ fontSize: "0.75rem", color: "#94a3b8", margin: 0 }}>
+            © 2026 FinTrack Pro. All rights reserved.
+          </p>
+        </div>
+      </main>
+    </div>
   );
 }

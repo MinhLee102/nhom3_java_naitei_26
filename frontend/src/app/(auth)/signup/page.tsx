@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import apiClient from "@/lib/axios";
 
 export default function SignUpPage() {
@@ -29,9 +29,7 @@ export default function SignUpPage() {
       router.push("/dashboard");
     } catch (err: unknown) {
       setErrorMessage(
-        err instanceof Error
-          ? err.message
-          : "Đăng ký thất bại. Vui lòng kiểm tra lại thông tin."
+        (err as Error).message || "Đăng ký thất bại. Vui lòng kiểm tra lại thông tin."
       );
     } finally {
       setLoading(false);
@@ -40,111 +38,292 @@ export default function SignUpPage() {
 
   return (
     <>
-      <div className="text-center -mt-4 mb-6">
-        <h2 className="text-xl font-bold text-[#131b2e] mb-1">Create Account</h2>
-        <p className="text-sm text-[#515f74]">
+      <div style={{ textAlign: "center", marginBottom: "1.5rem" }}>
+        <h2
+          style={{
+            fontSize: "1.25rem",
+            fontWeight: "700",
+            color: "#131b2e",
+            margin: "0 0 0.35rem 0",
+          }}
+        >
+          Create Account
+        </h2>
+        <p style={{ fontSize: "0.875rem", color: "#64748b", margin: 0 }}>
           Join FinTrack Pro to manage your personal finances today.
         </p>
       </div>
 
-      <div className="bg-white border border-[#E2E8F0] rounded-2xl shadow-lg p-8">
+      <div
+        style={{
+          backgroundColor: "#ffffff",
+          borderRadius: "16px",
+          padding: "2rem",
+          boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01)",
+          border: "1px solid #e2e8f0",
+        }}
+      >
         {errorMessage && (
-          <div className="mb-5 p-3 rounded-xl bg-red-50 border border-red-200 text-[#DC2626] text-xs font-medium flex items-center gap-2">
-            <span className="material-symbols-outlined text-[18px]">error</span>
-            <span>{errorMessage}</span>
+          <div
+            style={{
+              marginBottom: "1.25rem",
+              padding: "0.75rem",
+              borderRadius: "10px",
+              backgroundColor: "#fef2f2",
+              border: "1px solid #fecaca",
+              color: "#dc2626",
+              fontSize: "0.8125rem",
+              fontWeight: "500",
+            }}
+          >
+            {errorMessage}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+          {/* Full Name */}
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-[#515f74] mb-1.5" htmlFor="name">
-              Full Name
+            <label
+              style={{
+                display: "block",
+                fontSize: "0.6875rem",
+                fontWeight: "600",
+                textTransform: "uppercase",
+                letterSpacing: "0.05em",
+                color: "#64748b",
+                marginBottom: "0.5rem",
+              }}
+            >
+              FULL NAME
             </label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                <span className="material-symbols-outlined text-[20px]">person</span>
+            <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
+              <div
+                style={{
+                  position: "absolute",
+                  left: "0.875rem",
+                  display: "flex",
+                  alignItems: "center",
+                  pointerEvents: "none",
+                  color: "#94a3b8",
+                }}
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                  <circle cx="12" cy="7" r="4" />
+                </svg>
               </div>
               <input
-                id="name"
                 type="text"
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Alex Morgan"
-                className="block w-full pl-10 pr-4 py-2.5 border border-[#E2E8F0] rounded-xl bg-[#F8FAFC] text-[#131b2e] text-sm focus:bg-white focus:ring-2 focus:ring-[#004ac6]/20 focus:border-[#004ac6] placeholder:text-slate-400 transition-colors"
+                style={{
+                  width: "100%",
+                  padding: "0.6875rem 0.875rem 0.6875rem 2.625rem",
+                  backgroundColor: "#f8fafc",
+                  border: "1px solid #e2e8f0",
+                  borderRadius: "10px",
+                  fontSize: "0.875rem",
+                  color: "#1e293b",
+                  outline: "none",
+                  transition: "border-color 0.2s, background-color 0.2s",
+                }}
+                onFocus={(e) => {
+                  e.currentTarget.style.borderColor = "#004ac6";
+                  e.currentTarget.style.backgroundColor = "#ffffff";
+                }}
+                onBlur={(e) => {
+                  e.currentTarget.style.borderColor = "#e2e8f0";
+                  e.currentTarget.style.backgroundColor = "#f8fafc";
+                }}
               />
             </div>
           </div>
 
+          {/* Email */}
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-[#515f74] mb-1.5" htmlFor="email">
-              Email Address
+            <label
+              style={{
+                display: "block",
+                fontSize: "0.6875rem",
+                fontWeight: "600",
+                textTransform: "uppercase",
+                letterSpacing: "0.05em",
+                color: "#64748b",
+                marginBottom: "0.5rem",
+              }}
+            >
+              EMAIL ADDRESS
             </label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                <span className="material-symbols-outlined text-[20px]">mail</span>
+            <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
+              <div
+                style={{
+                  position: "absolute",
+                  left: "0.875rem",
+                  display: "flex",
+                  alignItems: "center",
+                  pointerEvents: "none",
+                  color: "#94a3b8",
+                }}
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="2" y="4" width="20" height="16" rx="2" />
+                  <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+                </svg>
               </div>
               <input
-                id="email"
                 type="email"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="alex.morgan@fintrack.pro"
-                className="block w-full pl-10 pr-4 py-2.5 border border-[#E2E8F0] rounded-xl bg-[#F8FAFC] text-[#131b2e] text-sm focus:bg-white focus:ring-2 focus:ring-[#004ac6]/20 focus:border-[#004ac6] placeholder:text-slate-400 transition-colors"
+                style={{
+                  width: "100%",
+                  padding: "0.6875rem 0.875rem 0.6875rem 2.625rem",
+                  backgroundColor: "#f8fafc",
+                  border: "1px solid #e2e8f0",
+                  borderRadius: "10px",
+                  fontSize: "0.875rem",
+                  color: "#1e293b",
+                  outline: "none",
+                  transition: "border-color 0.2s, background-color 0.2s",
+                }}
+                onFocus={(e) => {
+                  e.currentTarget.style.borderColor = "#004ac6";
+                  e.currentTarget.style.backgroundColor = "#ffffff";
+                }}
+                onBlur={(e) => {
+                  e.currentTarget.style.borderColor = "#e2e8f0";
+                  e.currentTarget.style.backgroundColor = "#f8fafc";
+                }}
               />
             </div>
           </div>
 
+          {/* Password */}
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-[#515f74] mb-1.5" htmlFor="password">
-              Password
+            <label
+              style={{
+                display: "block",
+                fontSize: "0.6875rem",
+                fontWeight: "600",
+                textTransform: "uppercase",
+                letterSpacing: "0.05em",
+                color: "#64748b",
+                marginBottom: "0.5rem",
+              }}
+            >
+              PASSWORD
             </label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                <span className="material-symbols-outlined text-[20px]">lock</span>
+            <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
+              <div
+                style={{
+                  position: "absolute",
+                  left: "0.875rem",
+                  display: "flex",
+                  alignItems: "center",
+                  pointerEvents: "none",
+                  color: "#94a3b8",
+                }}
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                </svg>
               </div>
               <input
-                id="password"
                 type="password"
                 required
                 minLength={6}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Tối thiểu 6 ký tự"
-                className="block w-full pl-10 pr-4 py-2.5 border border-[#E2E8F0] rounded-xl bg-[#F8FAFC] text-[#131b2e] text-sm focus:bg-white focus:ring-2 focus:ring-[#004ac6]/20 focus:border-[#004ac6] placeholder:text-slate-400 transition-colors"
+                style={{
+                  width: "100%",
+                  padding: "0.6875rem 0.875rem 0.6875rem 2.625rem",
+                  backgroundColor: "#f8fafc",
+                  border: "1px solid #e2e8f0",
+                  borderRadius: "10px",
+                  fontSize: "0.875rem",
+                  color: "#1e293b",
+                  outline: "none",
+                  transition: "border-color 0.2s, background-color 0.2s",
+                }}
+                onFocus={(e) => {
+                  e.currentTarget.style.borderColor = "#004ac6";
+                  e.currentTarget.style.backgroundColor = "#ffffff";
+                }}
+                onBlur={(e) => {
+                  e.currentTarget.style.borderColor = "#e2e8f0";
+                  e.currentTarget.style.backgroundColor = "#f8fafc";
+                }}
               />
             </div>
           </div>
 
-          <div className="pt-3">
+          {/* Submit */}
+          <div style={{ paddingTop: "0.5rem" }}>
             <button
               type="submit"
               disabled={loading}
-              className="w-full flex justify-center items-center gap-2 py-3 px-4 rounded-xl shadow-md text-sm font-semibold text-white bg-[#004ac6] hover:bg-[#2563eb] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#004ac6] transition-all active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed"
+              style={{
+                width: "100%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "0.5rem",
+                padding: "0.75rem 1rem",
+                backgroundColor: "#004ac6",
+                color: "#ffffff",
+                fontSize: "0.875rem",
+                fontWeight: "600",
+                borderRadius: "10px",
+                border: "none",
+                cursor: loading ? "not-allowed" : "pointer",
+                boxShadow: "0 4px 6px -1px rgba(0, 74, 198, 0.25)",
+                transition: "background-color 0.2s",
+                opacity: loading ? 0.75 : 1,
+              }}
+              onMouseEnter={(e) => {
+                if (!loading) e.currentTarget.style.backgroundColor = "#003ba0";
+              }}
+              onMouseLeave={(e) => {
+                if (!loading) e.currentTarget.style.backgroundColor = "#004ac6";
+              }}
             >
-              {loading ? (
-                <>
-                  <span className="material-symbols-outlined animate-spin text-[18px]">progress_activity</span>
-                  <span>Creating Account...</span>
-                </>
-              ) : (
-                <>
-                  <span>Sign Up</span>
-                  <span className="material-symbols-outlined text-[18px]">how_to_reg</span>
-                </>
+              <span>{loading ? "Creating Account..." : "Sign Up"}</span>
+              {!loading && (
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                  <polyline points="12 5 19 12 12 19" />
+                </svg>
               )}
             </button>
           </div>
         </form>
 
-        <div className="mt-6 pt-5 border-t border-[#E2E8F0] text-center">
-          <p className="text-xs text-[#515f74]">
-            Already have an account?{" "}
-            <Link href="/login" className="text-[#004ac6] font-semibold hover:underline">
-              Sign In
-            </Link>
-          </p>
+        <div
+          style={{
+            marginTop: "1.5rem",
+            paddingTop: "1.25rem",
+            borderTop: "1px solid #f1f5f9",
+            textAlign: "center",
+            fontSize: "0.8125rem",
+            color: "#64748b",
+          }}
+        >
+          Already have an account?{" "}
+          <Link
+            href="/login"
+            style={{
+              color: "#004ac6",
+              fontWeight: "600",
+              textDecoration: "none",
+            }}
+          >
+            Sign In
+          </Link>
         </div>
       </div>
     </>
