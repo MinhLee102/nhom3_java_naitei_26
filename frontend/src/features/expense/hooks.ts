@@ -3,7 +3,7 @@
  * Custom hooks — dùng React Query để quản lý server-state,
  * tự động cache, refetch, và đồng bộ UI.
  */
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { expenseApi } from "./api";
 import type { CreateExpenseDto, UpdateExpenseDto, ExpenseFilter } from "./types";
 
@@ -13,10 +13,11 @@ export function useExpenses(filter?: ExpenseFilter) {
   return useQuery({
     queryKey: [QUERY_KEY, filter],
     queryFn: () => expenseApi.getAll(filter).then((res) => res.data),
+    placeholderData: keepPreviousData,
   });
 }
 
-export function useExpense(id: string) {
+export function useExpense(id: number) {
   return useQuery({
     queryKey: [QUERY_KEY, id],
     queryFn: () => expenseApi.getById(id).then((res) => res.data),
@@ -37,7 +38,7 @@ export function useCreateExpense() {
 export function useUpdateExpense() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: UpdateExpenseDto }) =>
+    mutationFn: ({ id, data }: { id: number; data: UpdateExpenseDto }) =>
       expenseApi.update(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [QUERY_KEY] });
@@ -48,7 +49,7 @@ export function useUpdateExpense() {
 export function useDeleteExpense() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (id: string) => expenseApi.delete(id),
+    mutationFn: (id: number) => expenseApi.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [QUERY_KEY] });
     },
