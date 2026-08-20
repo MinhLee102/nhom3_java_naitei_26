@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import vn.naitei.nhom3.expensemanagement.aop.LogActivity;
 import vn.naitei.nhom3.expensemanagement.common.response.ApiResponse;
 import vn.naitei.nhom3.expensemanagement.dto.budgettemplate.BudgetTemplateCreateRequest;
 import vn.naitei.nhom3.expensemanagement.dto.budgettemplate.BudgetTemplateDetailRequest;
@@ -56,6 +57,8 @@ public class BudgetTemplateAdminController {
 
     @PostMapping
         @Transactional
+        @LogActivity(action = "CREATE_BUDGET_TEMPLATE", entityType = "BUDGET_TEMPLATE",
+                entityId = "#result.body.data.id", description = "'Tạo mẫu ngân sách: ' + #result.body.data.name")
     public ResponseEntity<ApiResponse<BudgetTemplateResponse>> create(
             @Valid @RequestBody BudgetTemplateCreateRequest request) {
         BudgetTemplate template = budgetTemplateService.create(toEntity(request.getName(),
@@ -68,6 +71,8 @@ public class BudgetTemplateAdminController {
 
     @PutMapping("/{id}")
         @Transactional
+        @LogActivity(action = "UPDATE_BUDGET_TEMPLATE", entityType = "BUDGET_TEMPLATE",
+                entityId = "#id", description = "'Cập nhật mẫu ngân sách #' + #id")
     public ResponseEntity<ApiResponse<BudgetTemplateResponse>> update(
             @PathVariable Long id, @Valid @RequestBody BudgetTemplateUpdateRequest request) {
         BudgetTemplate existingTemplate = budgetTemplateService.getById(id);
@@ -85,6 +90,8 @@ public class BudgetTemplateAdminController {
 
     @DeleteMapping("/{id}")
         @Transactional
+        @LogActivity(action = "DELETE_BUDGET_TEMPLATE", entityType = "BUDGET_TEMPLATE",
+                entityId = "#id", description = "'Xoá mẫu ngân sách #' + #id")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
         budgetTemplateService.delete(id);
         return ResponseEntity.ok(ApiResponse.success("Xóa mẫu ngân sách thành công", null));
