@@ -6,6 +6,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import vn.naitei.nhom3.expensemanagement.dto.activitylog.ActivityLogFilterRequest;
 import vn.naitei.nhom3.expensemanagement.dto.activitylog.ActivityLogPageResponse;
@@ -33,8 +34,12 @@ public class ActivityLogServiceImpl implements ActivityLogService {
         return activityLogRepository.findByUserId(userId);
     }
 
+    // REQUIRES_NEW: ghi log phải luôn commit độc lập, không join transaction của caller
+    // (ActivityLogAspect gọi method này từ trong transaction của nghiệp vụ chính, vd
+    // BudgetTemplateAdminController.update — join vào transaction đó khiến việc ghi log
+    // không thực sự persist do transaction ngoài đã ở giai đoạn commit khi advice chạy).
     @Override
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public ActivityLog log(Long userId, String action, String entityType, Long entityId, String description) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> ResourceNotFoundException.of("Người dùng", userId));

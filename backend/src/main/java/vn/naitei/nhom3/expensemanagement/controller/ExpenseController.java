@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import vn.naitei.nhom3.expensemanagement.aop.LogActivity;
 import vn.naitei.nhom3.expensemanagement.common.response.ApiResponse;
 import vn.naitei.nhom3.expensemanagement.dto.expense.AttachmentDownload;
 import vn.naitei.nhom3.expensemanagement.dto.expense.ExpenseFilterRequest;
@@ -51,6 +52,8 @@ public class ExpenseController {
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @LogActivity(action = "CREATE_EXPENSE", entityType = "EXPENSE",
+            entityId = "#result.body.data.id", description = "'Tạo chi tiêu: ' + #result.body.data.title")
     public ResponseEntity<ApiResponse<ExpenseResponse>> create(
             @AuthenticationPrincipal UserPrincipal principal,
             @Valid @RequestBody ExpenseRequest request) {
@@ -60,6 +63,8 @@ public class ExpenseController {
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @LogActivity(action = "CREATE_EXPENSE", entityType = "EXPENSE",
+            entityId = "#result.body.data.id", description = "'Tạo chi tiêu: ' + #result.body.data.title")
     public ResponseEntity<ApiResponse<ExpenseResponse>> createWithAttachments(
             @AuthenticationPrincipal UserPrincipal principal,
             @Valid @RequestPart("data") ExpenseRequest request,
@@ -79,6 +84,8 @@ public class ExpenseController {
     }
 
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @LogActivity(action = "UPDATE_EXPENSE", entityType = "EXPENSE",
+            entityId = "#id", description = "'Cập nhật chi tiêu #' + #id")
     public ResponseEntity<ApiResponse<ExpenseResponse>> update(
             @AuthenticationPrincipal UserPrincipal principal,
             @PathVariable Long id,
@@ -88,6 +95,8 @@ public class ExpenseController {
     }
 
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @LogActivity(action = "UPDATE_EXPENSE", entityType = "EXPENSE",
+            entityId = "#id", description = "'Cập nhật chi tiêu #' + #id")
     public ResponseEntity<ApiResponse<ExpenseResponse>> updateWithAttachments(
             @AuthenticationPrincipal UserPrincipal principal,
             @PathVariable Long id,
@@ -99,6 +108,8 @@ public class ExpenseController {
     }
 
     @DeleteMapping("/{id}")
+    @LogActivity(action = "DELETE_EXPENSE", entityType = "EXPENSE",
+            entityId = "#id", description = "'Xoá chi tiêu #' + #id")
     public ResponseEntity<ApiResponse<Void>> delete(
             @AuthenticationPrincipal UserPrincipal principal,
             @PathVariable Long id) {
@@ -107,6 +118,8 @@ public class ExpenseController {
     }
 
     @DeleteMapping("/{expenseId}/attachments/{attachmentId}")
+    @LogActivity(action = "DELETE_EXPENSE_ATTACHMENT", entityType = "EXPENSE_ATTACHMENT",
+            entityId = "#attachmentId", description = "'Xoá file đính kèm #' + #attachmentId + ' của chi tiêu #' + #expenseId")
     public ResponseEntity<ApiResponse<Void>> deleteAttachment(
             @AuthenticationPrincipal UserPrincipal principal,
             @PathVariable Long expenseId,
