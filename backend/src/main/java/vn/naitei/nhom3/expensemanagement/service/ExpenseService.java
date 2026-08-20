@@ -1,13 +1,13 @@
 package vn.naitei.nhom3.expensemanagement.service;
 
+import vn.naitei.nhom3.expensemanagement.dto.expense.ExpenseFilterRequest;
+import vn.naitei.nhom3.expensemanagement.dto.expense.ExpensePageResponse;
 import vn.naitei.nhom3.expensemanagement.dto.expense.ExpenseRequest;
 import vn.naitei.nhom3.expensemanagement.dto.expense.ExpenseResponse;
 
-import java.util.List;
-
 public interface ExpenseService {
 
-    List<ExpenseResponse> getAllByUser(Long userId);
+    ExpensePageResponse getAllByUser(Long userId, ExpenseFilterRequest filter);
 
     ExpenseResponse getById(Long userId, Long id);
 
