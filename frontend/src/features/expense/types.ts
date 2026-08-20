@@ -23,7 +23,7 @@ export interface CreateExpenseDto {
   note?: string;
 }
 
-export interface UpdateExpenseDto extends Partial<CreateExpenseDto> {}
+export type UpdateExpenseDto = Partial<CreateExpenseDto>;
 
 export interface ExpenseFilter {
   categoryId?: number;

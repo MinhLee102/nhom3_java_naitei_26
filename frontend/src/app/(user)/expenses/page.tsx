@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { AlertCircle, Plus } from "lucide-react";
 import Button from "@/components/ui/Button";
@@ -24,12 +24,6 @@ export default function ExpensesPage() {
     size: PAGE_SIZE,
     sort: DEFAULT_SORT,
   });
-
-  useEffect(() => {
-    if (data && data.totalPages > 0 && page >= data.totalPages) {
-      setPage(data.totalPages - 1);
-    }
-  }, [data, page]);
 
   return (
     <div className="space-y-6">
