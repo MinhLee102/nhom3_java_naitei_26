@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpHeaders;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
@@ -43,6 +44,9 @@ class ActivityLogAdminIntegrationTest {
 
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -201,8 +205,11 @@ class ActivityLogAdminIntegrationTest {
         activityLog.setEntityId(user.getId());
         activityLog.setDescription(description);
         ActivityLog saved = activityLogRepository.saveAndFlush(activityLog);
+        // BaseEntity maps created_at as updatable=false, so JPA silently ignores any
+        // change to it after insert — backdate directly via JDBC for test purposes.
+        jdbcTemplate.update("UPDATE activity_logs SET created_at = ? WHERE id = ?", createdAt, saved.getId());
         saved.setCreatedAt(createdAt);
-        return activityLogRepository.saveAndFlush(saved);
+        return saved;
     }
 
     private User saveUser(String prefix, Role role) {
