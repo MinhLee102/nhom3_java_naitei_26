@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import vn.naitei.nhom3.expensemanagement.common.response.ApiResponse;
+import vn.naitei.nhom3.expensemanagement.dto.expense.ExpenseFilterRequest;
+import vn.naitei.nhom3.expensemanagement.dto.expense.ExpensePageResponse;
 import vn.naitei.nhom3.expensemanagement.dto.expense.ExpenseRequest;
 import vn.naitei.nhom3.expensemanagement.dto.expense.ExpenseResponse;
 import vn.naitei.nhom3.expensemanagement.security.UserPrincipal;
@@ -25,6 +28,14 @@ import vn.naitei.nhom3.expensemanagement.service.ExpenseService;
 public class ExpenseController {
 
     private final ExpenseService expenseService;
+
+    @GetMapping
+    public ResponseEntity<ApiResponse<ExpensePageResponse>> getAll(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @Valid @ModelAttribute ExpenseFilterRequest filter) {
+        ExpensePageResponse response = expenseService.getAllByUser(principal.getId(), filter);
+        return ResponseEntity.ok(ApiResponse.success(response));
+    }
 
     @PostMapping
     public ResponseEntity<ApiResponse<ExpenseResponse>> create(
