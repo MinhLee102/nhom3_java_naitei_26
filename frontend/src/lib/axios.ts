@@ -9,7 +9,7 @@ import type { ApiResponse } from "@/types/api";
  * - Lỗi 401 được xử lý thống nhất
  */
 const apiClient = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
   headers: {
     "Content-Type": "application/json",
   },
@@ -53,8 +53,7 @@ apiClient.interceptors.response.use(
   },
   (error: AxiosError<ApiResponse<unknown>>) => {
     const status = error.response?.status;
-    const message =
-      error.response?.data?.message || "Đã xảy ra lỗi, vui lòng thử lại.";
+    const message = error.response?.data?.message || "Đã xảy ra lỗi, vui lòng thử lại.";
 
     // 401 Unauthorized → xóa token, redirect về trang login
     if (status === 401) {
