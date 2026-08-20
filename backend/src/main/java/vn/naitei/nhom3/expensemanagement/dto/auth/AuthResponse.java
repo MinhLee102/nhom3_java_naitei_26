@@ -13,6 +13,7 @@ import vn.naitei.nhom3.expensemanagement.entity.enums.Role;
 public class AuthResponse {
 
     private String token;
+    private String refreshToken;
     private UserDto user;
 
     @Getter
