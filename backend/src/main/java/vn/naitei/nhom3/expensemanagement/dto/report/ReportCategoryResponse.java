@@ -9,6 +9,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public class ReportCategoryResponse {
 
+    private final Long categoryId;
     private final String name;
     private final BigDecimal amount;
 }
