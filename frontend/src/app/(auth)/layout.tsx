@@ -6,44 +6,13 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        backgroundColor: "#f8fafc",
-        padding: "1.5rem",
-        fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-      }}
-    >
-      <main style={{ width: "100%", maxWidth: "440px" }}>
+    <div className="flex min-h-screen flex-col items-center justify-center bg-slate-50 p-6 font-sans">
+      <main className="w-full max-w-110">
         {/* Logo Header */}
-        <div style={{ textAlign: "center", marginBottom: "1.75rem" }}>
-          <div
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: "0.625rem",
-              marginBottom: "1rem",
-            }}
-          >
+        <div className="mb-7 text-center">
+          <div className="inline-flex items-center justify-center gap-2.5 mb-4">
             {/* Logo chiếc ví FinTrack Pro */}
-            <div
-              style={{
-                width: "44px",
-                height: "44px",
-                borderRadius: "12px",
-                background: "linear-gradient(135deg, #004ac6, #2563eb)",
-                color: "#ffffff",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                boxShadow: "0 4px 6px -1px rgba(0, 74, 198, 0.25)",
-              }}
-            >
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-linear-to-br from-blue-700 to-blue-600 text-white shadow-md shadow-blue-700/25">
               <svg
                 width="26"
                 height="26"
@@ -60,30 +29,22 @@ export default function AuthLayout({
                 <path d="M2 9h20" />
                 {/* Khóa ví */}
                 <rect x="14" y="11" width="6" height="5" rx="1.5" fill="currentColor" />
-                <circle cx="16.5" cy="13.5" r="0.75" fill="#004ac6" />
+                <circle cx="16.5" cy="13.5" r="0.75" className="fill-blue-700" />
               </svg>
             </div>
 
-            <h1
-              style={{
-                fontSize: "1.5rem",
-                fontWeight: "700",
-                color: "#004ac6",
-                letterSpacing: "-0.025em",
-                margin: 0,
-              }}
-            >
+            <h1 className="m-0 text-2xl font-bold tracking-tight text-blue-700">
               FinTrack Pro
             </h1>
           </div>
         </div>
 
-        {/* Nội dung form các trang */}
+        {/* Nội dung form các trang (Login, Signup, Forgot Password,...) */}
         {children}
 
         {/* Footer */}
-        <div style={{ textAlign: "center", marginTop: "2rem" }}>
-          <p style={{ fontSize: "0.75rem", color: "#94a3b8", margin: 0 }}>
+        <div className="mt-8 text-center">
+          <p className="m-0 text-xs text-slate-400">
             © 2026 FinTrack Pro. All rights reserved.
           </p>
         </div>
