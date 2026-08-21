@@ -21,6 +21,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.YearMonth;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -49,6 +50,20 @@ public class BudgetServiceImpl implements BudgetService {
 
         return budgets.stream()
                 .map(budget -> mapToResponse(budget, userId))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<BudgetResponse> getBudgetAlerts(Long userId, Short year, Byte month) {
+        Short targetYear = year != null ? year : (short) YearMonth.now().getYear();
+        Byte targetMonth = month != null ? month : (byte) YearMonth.now().getMonthValue();
+
+        List<Budget> budgets = budgetRepository.findByUserIdAndYearAndMonth(userId, targetYear, targetMonth);
+
+        return budgets.stream()
+                .map(budget -> mapToResponse(budget, userId))
+                .sorted(Comparator.comparing(BudgetResponse::getPercentageSpent).reversed())
                 .collect(Collectors.toList());
     }
 
@@ -101,7 +116,6 @@ public class BudgetServiceImpl implements BudgetService {
 
         Category category = validateCategory(userId, request.getCategoryId());
 
-        // Check if updating to another category/year/month that conflicts with another record
         Optional<Budget> existing = budgetRepository.findByUserIdAndCategoryIdAndYearAndMonth(
                 userId, request.getCategoryId(), request.getYear(), request.getMonth());
         if (existing.isPresent() && !existing.get().getId().equals(id)) {
@@ -167,6 +181,13 @@ public class BudgetServiceImpl implements BudgetService {
                     .doubleValue();
         }
 
+        String alertStatus = "NORMAL";
+        if (percentageSpent >= 100.0) {
+            alertStatus = "EXCEEDED";
+        } else if (percentageSpent >= 80.0) {
+            alertStatus = "WARNING";
+        }
+
         return BudgetResponse.builder()
                 .id(budget.getId())
                 .userId(budget.getUser().getId())
@@ -180,6 +201,7 @@ public class BudgetServiceImpl implements BudgetService {
                 .remainingAmount(remainingAmount)
                 .percentageSpent(percentageSpent)
                 .isOverBudget(isOverBudget)
+                .alertStatus(alertStatus)
                 .createdAt(budget.getCreatedAt())
                 .updatedAt(budget.getUpdatedAt())
                 .build();

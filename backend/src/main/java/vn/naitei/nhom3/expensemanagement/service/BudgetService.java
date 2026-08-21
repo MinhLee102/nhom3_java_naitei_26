@@ -9,6 +9,8 @@ public interface BudgetService {
 
     List<BudgetResponse> getBudgets(Long userId, Short year, Byte month);
 
+    List<BudgetResponse> getBudgetAlerts(Long userId, Short year, Byte month);
+
     BudgetResponse getById(Long userId, Long id);
 
     BudgetResponse create(Long userId, BudgetRequest request);

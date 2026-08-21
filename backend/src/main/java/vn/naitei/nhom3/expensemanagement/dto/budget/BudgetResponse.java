@@ -28,6 +28,7 @@ public class BudgetResponse {
     private BigDecimal remainingAmount;
     private Double percentageSpent;
     private Boolean isOverBudget;
+    private String alertStatus; // NORMAL, WARNING, EXCEEDED
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }
