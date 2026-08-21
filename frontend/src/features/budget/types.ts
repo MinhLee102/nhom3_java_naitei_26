@@ -1,20 +1,31 @@
 export interface Budget {
-  id: string;
-  categoryId: string;
-  categoryName?: string;
-  amount: number;
-  spent: number;
-  month: number;
+  id: number;
+  userId: number;
+  categoryId: number;
+  categoryName: string;
+  categoryIcon: string;
   year: number;
-  createdAt: string;
-  updatedAt: string;
+  month: number;
+  amount: number;
+  spentAmount: number;
+  remainingAmount: number;
+  percentageSpent: number;
+  isOverBudget: boolean;
+  alertStatus: "NORMAL" | "WARNING" | "EXCEEDED";
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface CreateBudgetDto {
-  categoryId: string;
-  amount: number;
-  month: number;
+  categoryId: number;
   year: number;
+  month: number;
+  amount: number;
 }
 
-export interface UpdateBudgetDto extends Partial<CreateBudgetDto> {}
+export interface UpdateBudgetDto {
+  categoryId: number;
+  year: number;
+  month: number;
+  amount: number;
+}
