@@ -207,6 +207,18 @@ class ExpenseAdminIntegrationTest {
         assertThat(items.get(0).get("title").asText()).isEqualTo("Newer");
     }
 
+    @Test
+    void shouldSortByDateInBothDirections() {
+        saveExpense(userA, expenseCategory, "Older", new BigDecimal("10000"), LocalDate.of(2026, 7, 1));
+        saveExpense(userA, expenseCategory, "Newer", new BigDecimal("20000"), LocalDate.of(2026, 8, 1));
+
+        JsonNode ascending = get("/api/admin/expenses?userId=" + userA.getId() + "&sort=date,asc", adminToken);
+        JsonNode descending = get("/api/admin/expenses?userId=" + userA.getId() + "&sort=date,desc", adminToken);
+
+        assertThat(ascending.at("/data/items").get(0).get("title").asText()).isEqualTo("Older");
+        assertThat(descending.at("/data/items").get(0).get("title").asText()).isEqualTo("Newer");
+    }
+
     // ─── Authorization tests ─────────────────────────────────────────────────
 
     @Test
@@ -236,6 +248,10 @@ class ExpenseAdminIntegrationTest {
         assertBadRequest("/api/admin/expenses?size=0");
         assertBadRequest("/api/admin/expenses?size=101");
         assertBadRequest("/api/admin/expenses?sort=user,password");
+        assertBadRequest("/api/admin/expenses?sort=date,sideways");
+        assertBadRequest("/api/admin/expenses?page=not-a-number");
+        assertBadRequest("/api/admin/expenses?minAmount=not-a-number");
+        assertBadRequest("/api/admin/expenses?fromDate=2026-99-99");
     }
 
     @Test
@@ -282,10 +298,12 @@ class ExpenseAdminIntegrationTest {
         saveExpense(userA, expenseCategory, "C-75k", new BigDecimal("75000"), LocalDate.of(2026, 8, 3));
 
         JsonNode ascending = get("/api/admin/expenses?userId=" + userA.getId() + "&sort=amount,asc", adminToken);
+        JsonNode descending = get("/api/admin/expenses?userId=" + userA.getId() + "&sort=amount,desc", adminToken);
         JsonNode items = ascending.at("/data/items");
 
-        // First item should have lowest amount
         assertThat(items.get(0).get("amount").decimalValue()).isEqualByComparingTo(new BigDecimal("50000"));
+        assertThat(descending.at("/data/items").get(0).get("amount").decimalValue())
+            .isEqualByComparingTo(new BigDecimal("100000"));
     }
 
     @Test
@@ -295,10 +313,11 @@ class ExpenseAdminIntegrationTest {
         saveExpense(userA, expenseCategory, "Mango", new BigDecimal("50000"), LocalDate.of(2026, 8, 3));
 
         JsonNode ascending = get("/api/admin/expenses?userId=" + userA.getId() + "&sort=title,asc", adminToken);
+        JsonNode descending = get("/api/admin/expenses?userId=" + userA.getId() + "&sort=title,desc", adminToken);
         JsonNode items = ascending.at("/data/items");
 
-        // First item should be "Apple" (alphabetically first)
         assertThat(items.get(0).get("title").asText()).isEqualTo("Apple");
+        assertThat(descending.at("/data/items").get(0).get("title").asText()).isEqualTo("Zebra");
     }
 
     @Test
