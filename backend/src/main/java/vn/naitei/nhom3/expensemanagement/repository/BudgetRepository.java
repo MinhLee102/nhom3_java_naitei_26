@@ -8,8 +8,15 @@ import java.util.Optional;
 
 public interface BudgetRepository extends JpaRepository<Budget, Long> {
 
+    List<Budget> findByUserId(Long userId);
+
     List<Budget> findByUserIdAndYearAndMonth(Long userId, Short year, Byte month);
 
+    List<Budget> findByUserIdAndYear(Long userId, Short year);
+
     Optional<Budget> findByUserIdAndCategoryIdAndYearAndMonth(
+            Long userId, Long categoryId, Short year, Byte month);
+
+    boolean existsByUserIdAndCategoryIdAndYearAndMonth(
             Long userId, Long categoryId, Short year, Byte month);
 }
