@@ -15,9 +15,8 @@ import {
 import { useDashboardSummary } from "@/features/dashboard/hooks";
 import { formatCurrency } from "@/lib/utils";
 import Button from "@/components/ui/Button";
-import Card from "@/components/ui/Card";
 import Skeleton from "@/components/ui/Skeleton";
-import { StatCard } from "@/components/shared";
+import CategorySpendingChart from "@/components/dashboard/CategorySpendingChart";
 
 export default function DashboardPage() {
   const { data: summary, isLoading, error } = useDashboardSummary();
@@ -222,14 +221,9 @@ export default function DashboardPage() {
         </Link>
       </div>
 
-      {/* Main Content Area - Category Breakdown & Visuals Placeholder */}
+      {/* Category Breakdown Chart Section */}
       <div id="category-chart-container">
-        {/* Placeholder ready for Task 99019 CategorySpendingChart component */}
-        <Card title="Cơ cấu Chi tiêu theo Danh mục">
-          <div className="flex h-64 items-center justify-center text-sm text-gray-400">
-            Biểu đồ phân bổ chi tiêu sẽ được tích hợp tại đây.
-          </div>
-        </Card>
+        <CategorySpendingChart />
       </div>
     </div>
   );
