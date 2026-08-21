@@ -1,19 +1,19 @@
 package vn.naitei.nhom3.expensemanagement.service;
 
-import vn.naitei.nhom3.expensemanagement.entity.Budget;
+import vn.naitei.nhom3.expensemanagement.dto.budget.BudgetRequest;
+import vn.naitei.nhom3.expensemanagement.dto.budget.BudgetResponse;
 
 import java.util.List;
 
 public interface BudgetService {
 
-    List<Budget> getByUserAndPeriod(Long userId, Short year, Byte month);
+    List<BudgetResponse> getBudgets(Long userId, Short year, Byte month);
 
-    Budget getById(Long id);
+    BudgetResponse getById(Long userId, Long id);
 
-    /**
-     * Tạo mới hoặc cập nhật budget nếu User đã đặt ngân sách cho category + kỳ (year, month) đó rồi.
-     */
-    Budget createOrUpdate(Long userId, Long categoryId, Budget budget);
+    BudgetResponse create(Long userId, BudgetRequest request);
 
-    void delete(Long id);
+    BudgetResponse update(Long userId, Long id, BudgetRequest request);
+
+    void delete(Long userId, Long id);
 }
