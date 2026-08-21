@@ -5,8 +5,9 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import apiClient from "@/lib/axios";
 
-export default function LoginPage() {
+export default function SignUpPage() {
   const router = useRouter();
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -18,7 +19,7 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const res = await apiClient.post("/auth/login", { email, password });
+      const res = await apiClient.post("/auth/register", { name, email, password });
       const { token, refreshToken, user } = res.data;
 
       document.cookie = `access_token=${token}; path=/; max-age=86400; SameSite=Lax`;
@@ -26,14 +27,10 @@ export default function LoginPage() {
       if (refreshToken) localStorage.setItem("refresh_token", refreshToken);
       localStorage.setItem("user", JSON.stringify(user));
 
-      if (user?.role === "ADMIN") {
-        router.push("/admin/dashboard");
-      } else {
-        router.push("/dashboard");
-      }
+      router.push("/dashboard");
     } catch (err: unknown) {
       setErrorMessage(
-        (err as Error).message || "Đăng nhập thất bại. Vui lòng kiểm tra lại tài khoản hoặc mật khẩu."
+        (err as Error).message || "Đăng ký thất bại. Vui lòng kiểm tra lại thông tin."
       );
     } finally {
       setLoading(false);
@@ -42,7 +39,6 @@ export default function LoginPage() {
 
   return (
     <>
-      {/* Tiêu đề trang */}
       <div style={{ textAlign: "center", marginBottom: "1.5rem" }}>
         <h2
           style={{
@@ -52,14 +48,13 @@ export default function LoginPage() {
             margin: "0 0 0.35rem 0",
           }}
         >
-          Sign In
+          Create Account
         </h2>
         <p style={{ fontSize: "0.875rem", color: "#64748b", margin: 0 }}>
-          Access your personal financial management account.
+          Join FinTrack Pro to manage your personal finances today.
         </p>
       </div>
 
-      {/* Card Form */}
       <div
         style={{
           backgroundColor: "#ffffff",
@@ -87,6 +82,66 @@ export default function LoginPage() {
         )}
 
         <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+          {/* Full Name */}
+          <div>
+            <label
+              style={{
+                display: "block",
+                fontSize: "0.6875rem",
+                fontWeight: "600",
+                textTransform: "uppercase",
+                letterSpacing: "0.05em",
+                color: "#64748b",
+                marginBottom: "0.5rem",
+              }}
+            >
+              FULL NAME
+            </label>
+            <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
+              <div
+                style={{
+                  position: "absolute",
+                  left: "0.875rem",
+                  display: "flex",
+                  alignItems: "center",
+                  pointerEvents: "none",
+                  color: "#94a3b8",
+                }}
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                  <circle cx="12" cy="7" r="4" />
+                </svg>
+              </div>
+              <input
+                type="text"
+                required
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Alex Morgan"
+                style={{
+                  width: "100%",
+                  padding: "0.6875rem 0.875rem 0.6875rem 2.625rem",
+                  backgroundColor: "#f8fafc",
+                  border: "1px solid #e2e8f0",
+                  borderRadius: "10px",
+                  fontSize: "0.875rem",
+                  color: "#1e293b",
+                  outline: "none",
+                  transition: "border-color 0.2s, background-color 0.2s",
+                }}
+                onFocus={(e) => {
+                  e.currentTarget.style.borderColor = "#004ac6";
+                  e.currentTarget.style.backgroundColor = "#ffffff";
+                }}
+                onBlur={(e) => {
+                  e.currentTarget.style.borderColor = "#e2e8f0";
+                  e.currentTarget.style.backgroundColor = "#f8fafc";
+                }}
+              />
+            </div>
+          </div>
+
           {/* Email */}
           <div>
             <label
@@ -123,7 +178,7 @@ export default function LoginPage() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="user@fintrack.pro"
+                placeholder="alex.morgan@fintrack.pro"
                 style={{
                   width: "100%",
                   padding: "0.6875rem 0.875rem 0.6875rem 2.625rem",
@@ -181,9 +236,10 @@ export default function LoginPage() {
               <input
                 type="password"
                 required
+                minLength={6}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
+                placeholder="Tối thiểu 6 ký tự"
                 style={{
                   width: "100%",
                   padding: "0.6875rem 0.875rem 0.6875rem 2.625rem",
@@ -237,7 +293,7 @@ export default function LoginPage() {
                 if (!loading) e.currentTarget.style.backgroundColor = "#004ac6";
               }}
             >
-              <span>{loading ? "Signing in..." : "Sign In"}</span>
+              <span>{loading ? "Creating Account..." : "Sign Up"}</span>
               {!loading && (
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <line x1="5" y1="12" x2="19" y2="12" />
@@ -248,7 +304,6 @@ export default function LoginPage() {
           </div>
         </form>
 
-        {/* Link chuyển sang Đăng ký */}
         <div
           style={{
             marginTop: "1.5rem",
@@ -259,16 +314,16 @@ export default function LoginPage() {
             color: "#64748b",
           }}
         >
-          Don&apos;t have an account?{" "}
+          Already have an account?{" "}
           <Link
-            href="/signup"
+            href="/login"
             style={{
               color: "#004ac6",
               fontWeight: "600",
               textDecoration: "none",
             }}
           >
-            Sign Up
+            Sign In
           </Link>
         </div>
       </div>
