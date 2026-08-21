@@ -30,8 +30,7 @@ public class ExpenseAdminServiceImpl implements ExpenseAdminService {
     private static final Map<String, String> SORT_FIELDS = Map.of(
             "date", "expenseDate",
             "title", "title",
-            "amount", "amount",
-            "createdat", "createdAt");
+            "amount", "amount");
 
     private final ExpenseRepository expenseRepository;
 

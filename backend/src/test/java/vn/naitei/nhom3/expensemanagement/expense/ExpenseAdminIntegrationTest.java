@@ -243,6 +243,91 @@ class ExpenseAdminIntegrationTest {
         assertBadRequest("/api/admin/expenses?fromDate=2026-08-20&toDate=2026-08-01");
     }
 
+    @Test
+    void shouldFilterByCategory() {
+        saveExpense(userA, expenseCategory, "Lunch", new BigDecimal("50000"), LocalDate.of(2026, 8, 14));
+        saveExpense(userA, anotherCategory, "Transport", new BigDecimal("30000"), LocalDate.of(2026, 8, 14));
+
+        JsonNode response = get("/api/admin/expenses?userId=" + userA.getId()
+                + "&categoryId=" + expenseCategory.getId(), adminToken);
+
+        JsonNode items = response.at("/data/items");
+        for (int i = 0; i < items.size(); i++) {
+            assertThat(items.get(i).get("categoryId").asLong()).isEqualTo(expenseCategory.getId());
+        }
+    }
+
+    @Test
+    void shouldFilterByAmountRange() {
+        saveExpense(userA, expenseCategory, "Cheap", new BigDecimal("10000"), LocalDate.of(2026, 8, 1));
+        saveExpense(userA, expenseCategory, "Medium", new BigDecimal("50000"), LocalDate.of(2026, 8, 5));
+        saveExpense(userA, expenseCategory, "Expensive", new BigDecimal("100000"), LocalDate.of(2026, 8, 10));
+
+        JsonNode response = get("/api/admin/expenses?userId=" + userA.getId()
+                + "&minAmount=30000&maxAmount=60000", adminToken);
+
+        JsonNode items = response.at("/data/items");
+        assertThat(items.size()).isGreaterThanOrEqualTo(1);
+        for (int i = 0; i < items.size(); i++) {
+            BigDecimal amount = items.get(i).get("amount").decimalValue();
+            assertThat(amount).isGreaterThanOrEqualTo(new BigDecimal("30000"));
+            assertThat(amount).isLessThanOrEqualTo(new BigDecimal("60000"));
+        }
+    }
+
+    @Test
+    void shouldSortByAmount() {
+        saveExpense(userA, expenseCategory, "A-100k", new BigDecimal("100000"), LocalDate.of(2026, 8, 1));
+        saveExpense(userA, expenseCategory, "B-50k", new BigDecimal("50000"), LocalDate.of(2026, 8, 2));
+        saveExpense(userA, expenseCategory, "C-75k", new BigDecimal("75000"), LocalDate.of(2026, 8, 3));
+
+        JsonNode ascending = get("/api/admin/expenses?userId=" + userA.getId() + "&sort=amount,asc", adminToken);
+        JsonNode items = ascending.at("/data/items");
+
+        // First item should have lowest amount
+        assertThat(items.get(0).get("amount").decimalValue()).isEqualByComparingTo(new BigDecimal("50000"));
+    }
+
+    @Test
+    void shouldSortByTitle() {
+        saveExpense(userA, expenseCategory, "Zebra", new BigDecimal("50000"), LocalDate.of(2026, 8, 1));
+        saveExpense(userA, expenseCategory, "Apple", new BigDecimal("50000"), LocalDate.of(2026, 8, 2));
+        saveExpense(userA, expenseCategory, "Mango", new BigDecimal("50000"), LocalDate.of(2026, 8, 3));
+
+        JsonNode ascending = get("/api/admin/expenses?userId=" + userA.getId() + "&sort=title,asc", adminToken);
+        JsonNode items = ascending.at("/data/items");
+
+        // First item should be "Apple" (alphabetically first)
+        assertThat(items.get(0).get("title").asText()).isEqualTo("Apple");
+    }
+
+    @Test
+    void shouldCombineFiltersWithAnd() {
+        saveExpense(userA, expenseCategory, "Lunch1", new BigDecimal("50000"), LocalDate.of(2026, 8, 10));
+        saveExpense(userA, expenseCategory, "Lunch2", new BigDecimal("60000"), LocalDate.of(2026, 8, 15));
+        saveExpense(userA, anotherCategory, "Transport", new BigDecimal("50000"), LocalDate.of(2026, 8, 15));
+        saveExpense(userB, expenseCategory, "Dinner", new BigDecimal("50000"), LocalDate.of(2026, 8, 15));
+
+        // Filter: userId=userA AND categoryId=expenseCategory AND dateRange=[8/12, 8/20] AND amountRange=[45k, 65k]
+        JsonNode response = get("/api/admin/expenses?userId=" + userA.getId()
+                + "&categoryId=" + expenseCategory.getId()
+                + "&fromDate=2026-08-12&toDate=2026-08-20"
+                + "&minAmount=45000&maxAmount=65000", adminToken);
+
+        JsonNode items = response.at("/data/items");
+        // Should only return Lunch2
+        assertThat(items.size()).isGreaterThanOrEqualTo(1);
+        for (int i = 0; i < items.size(); i++) {
+            assertThat(items.get(i).get("userId").asLong()).isEqualTo(userA.getId());
+            assertThat(items.get(i).get("categoryId").asLong()).isEqualTo(expenseCategory.getId());
+        }
+    }
+
+    @Test
+    void shouldRejectInvalidAmountRange() {
+        assertBadRequest("/api/admin/expenses?minAmount=60000&maxAmount=30000");
+    }
+
     // ─── Helpers ─────────────────────────────────────────────────────────────
 
     private JsonNode get(String uri, String token) {

@@ -31,7 +31,7 @@ public class AdminExpenseFilterRequest {
     private int size = 10;
 
     @Pattern(
-            regexp = "(?i)^(date|title|amount|createdAt),(asc|desc)$",
+            regexp = "(?i)^(date|title|amount),(asc|desc)$",
             message = "Sắp xếp phải có dạng field,asc hoặc field,desc")
     private String sort;
 
