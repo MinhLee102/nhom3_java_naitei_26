@@ -115,6 +115,16 @@ class ReportComparisonTrendControllerTest {
     }
 
     @Test
+    void comparisonRejectsInvalidPeriodValuesAndConflictingRanges() throws Exception {
+        assertBadRequest("/api/reports/comparison?period=week&value=2026-W01");
+        assertBadRequest("/api/reports/comparison?period=month&value=2026-13");
+        assertBadRequest("/api/reports/comparison?period=quarter&value=2026-Q5");
+        assertBadRequest("/api/reports/comparison?period=year&value=26");
+        assertBadRequest("/api/reports/comparison?period=month&value=2026-01&from=2026-01-01&to=2026-01-31");
+        assertBadRequest("/api/reports/comparison?from=2026-03-01&to=2026-01-01");
+    }
+
+    @Test
     void trendRejectsMissingInvalidAndReversedDateRange() throws Exception {
         assertBadRequest("/api/reports/trend?from=2026-01-01");
         assertBadRequest("/api/reports/trend?from=2026-02-30&to=2026-03-01");

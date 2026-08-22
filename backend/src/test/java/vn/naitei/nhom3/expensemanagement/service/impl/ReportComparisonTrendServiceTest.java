@@ -67,6 +67,24 @@ class ReportComparisonTrendServiceTest {
         assertTrendPoint(result.get(2), "2026-03", "0", "250000");
     }
 
+        @Test
+        void getTrendPreservesChronologicalOrderAcrossYears() {
+                LocalDate from = LocalDate.of(2026, 11, 15);
+                LocalDate to = LocalDate.of(2027, 2, 2);
+                when(incomeRepository.sumMonthlyAmountByUserIdAndIncomeDateBetween(7L, from, to))
+                                .thenReturn(List.of(new ReportPeriodAmount(2027, 1, new BigDecimal("500"))));
+                when(expenseRepository.sumMonthlyAmountByUserIdAndExpenseDateBetween(7L, from, to))
+                                .thenReturn(List.of(new ReportPeriodAmount(2026, 12, new BigDecimal("200"))));
+
+                List<ReportTrendPoint> result = reportService.getTrend(7L, from, to);
+
+                assertEquals(4, result.size());
+                assertTrendPoint(result.get(0), "2026-11", "0", "0");
+                assertTrendPoint(result.get(1), "2026-12", "0", "200");
+                assertTrendPoint(result.get(2), "2027-01", "500", "0");
+                assertTrendPoint(result.get(3), "2027-02", "0", "0");
+        }
+
     @Test
     void getComparisonRejectsReversedDateRangeBeforeQuerying() {
         assertThrows(BadRequestException.class, () -> reportService.getComparison(
