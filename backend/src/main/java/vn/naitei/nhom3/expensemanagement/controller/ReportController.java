@@ -9,7 +9,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import vn.naitei.nhom3.expensemanagement.common.response.ApiResponse;
+import vn.naitei.nhom3.expensemanagement.dto.report.ReportComparisonResponse;
 import vn.naitei.nhom3.expensemanagement.dto.report.ReportSummaryResponse;
+import vn.naitei.nhom3.expensemanagement.dto.report.ReportTrendPoint;
 import vn.naitei.nhom3.expensemanagement.exception.BadRequestException;
 import vn.naitei.nhom3.expensemanagement.security.UserPrincipal;
 import vn.naitei.nhom3.expensemanagement.service.ReportService;
@@ -21,6 +23,7 @@ import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.format.ResolverStyle;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/reports")
@@ -48,6 +51,32 @@ public class ReportController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
+    @GetMapping("/comparison")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<ApiResponse<ReportComparisonResponse>> getComparison(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @RequestParam(name = "period", required = false) String period,
+            @RequestParam(name = "value", required = false) String value,
+            @RequestParam(name = "from", required = false) String from,
+            @RequestParam(name = "to", required = false) String to) {
+        DateRange dateRange = resolveDateRange(period, value, from, to);
+        ReportComparisonResponse response = reportService.getComparison(
+                principal.getId(), dateRange.from(), dateRange.to());
+        return ResponseEntity.ok(ApiResponse.success(response));
+    }
+
+    @GetMapping("/trend")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<ApiResponse<List<ReportTrendPoint>>> getTrend(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @RequestParam(name = "from", required = false) String from,
+            @RequestParam(name = "to", required = false) String to) {
+        DateRange dateRange = resolveCustomDateRange(from, to);
+        List<ReportTrendPoint> response = reportService.getTrend(
+                principal.getId(), dateRange.from(), dateRange.to());
+        return ResponseEntity.ok(ApiResponse.success(response));
+    }
+
     private DateRange resolveDateRange(String period, String value, String from, String to) {
         boolean hasPeriodGroup = period != null || value != null;
         boolean hasCustomRange = from != null || to != null;
@@ -62,17 +91,21 @@ public class ReportController {
             return resolvePeriod(period, value);
         }
         if (hasCustomRange) {
-            if (from == null || to == null || from.isBlank() || to.isBlank()) {
-                throw new BadRequestException("From and to are required together");
-            }
-            LocalDate start = parseDate(from, "from");
-            LocalDate end = parseDate(to, "to");
-            if (start.isAfter(end)) {
-                throw new BadRequestException("From date must not be after to date");
-            }
-            return new DateRange(start, end);
+            return resolveCustomDateRange(from, to);
         }
         throw new BadRequestException("Either period/value or from/to is required");
+    }
+
+    private DateRange resolveCustomDateRange(String from, String to) {
+        if (from == null || to == null || from.isBlank() || to.isBlank()) {
+            throw new BadRequestException("From and to are required together");
+        }
+        LocalDate start = parseDate(from, "from");
+        LocalDate end = parseDate(to, "to");
+        if (start.isAfter(end)) {
+            throw new BadRequestException("From date must not be after to date");
+        }
+        return new DateRange(start, end);
     }
 
     private DateRange resolvePeriod(String period, String value) {
