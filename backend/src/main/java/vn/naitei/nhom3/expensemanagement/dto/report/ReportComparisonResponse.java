@@ -1,9 +1,9 @@
 package vn.naitei.nhom3.expensemanagement.dto.report;
 
+import java.math.BigDecimal;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-
-import java.math.BigDecimal;
 
 @Getter
 @AllArgsConstructor

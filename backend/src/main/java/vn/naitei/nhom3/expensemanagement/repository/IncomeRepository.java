@@ -8,8 +8,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import vn.naitei.nhom3.expensemanagement.entity.Income;
 import vn.naitei.nhom3.expensemanagement.dto.report.ReportPeriodAmount;
+import vn.naitei.nhom3.expensemanagement.entity.Income;
 
 public interface IncomeRepository extends JpaRepository<Income, Long> {
 

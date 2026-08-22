@@ -1,19 +1,30 @@
 package vn.naitei.nhom3.expensemanagement.controller;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.List;
+
+import static org.hamcrest.Matchers.is;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.MethodParameter;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.bind.support.WebDataBinderFactory;
+import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.request.NativeWebRequest;
-import org.springframework.web.bind.support.WebDataBinderFactory;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+
 import vn.naitei.nhom3.expensemanagement.dto.report.ReportComparisonResponse;
 import vn.naitei.nhom3.expensemanagement.dto.report.ReportTrendPoint;
 import vn.naitei.nhom3.expensemanagement.entity.User;
@@ -22,17 +33,6 @@ import vn.naitei.nhom3.expensemanagement.entity.enums.UserStatus;
 import vn.naitei.nhom3.expensemanagement.exception.GlobalExceptionHandler;
 import vn.naitei.nhom3.expensemanagement.security.UserPrincipal;
 import vn.naitei.nhom3.expensemanagement.service.ReportService;
-
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.List;
-
-import static org.hamcrest.Matchers.is;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
 class ReportComparisonTrendControllerTest {

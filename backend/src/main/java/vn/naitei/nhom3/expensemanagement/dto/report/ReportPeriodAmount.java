@@ -1,8 +1,8 @@
 package vn.naitei.nhom3.expensemanagement.dto.report;
 
-import lombok.Getter;
-
 import java.math.BigDecimal;
+
+import lombok.Getter;
 
 /** Aggregated amount for one calendar month, used by the report trend data layer. */
 @Getter

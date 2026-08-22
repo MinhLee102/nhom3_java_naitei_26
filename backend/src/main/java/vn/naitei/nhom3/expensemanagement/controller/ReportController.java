@@ -1,6 +1,14 @@
 package vn.naitei.nhom3.expensemanagement.controller;
 
-import lombok.RequiredArgsConstructor;
+import java.time.DateTimeException;
+import java.time.LocalDate;
+import java.time.Year;
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -8,6 +16,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import lombok.RequiredArgsConstructor;
 import vn.naitei.nhom3.expensemanagement.common.response.ApiResponse;
 import vn.naitei.nhom3.expensemanagement.dto.report.ReportComparisonResponse;
 import vn.naitei.nhom3.expensemanagement.dto.report.ReportSummaryResponse;
@@ -15,15 +25,6 @@ import vn.naitei.nhom3.expensemanagement.dto.report.ReportTrendPoint;
 import vn.naitei.nhom3.expensemanagement.exception.BadRequestException;
 import vn.naitei.nhom3.expensemanagement.security.UserPrincipal;
 import vn.naitei.nhom3.expensemanagement.service.ReportService;
-
-import java.time.LocalDate;
-import java.time.DateTimeException;
-import java.time.Year;
-import java.time.YearMonth;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-import java.time.format.ResolverStyle;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/reports")

@@ -1,24 +1,24 @@
 package vn.naitei.nhom3.expensemanagement.service.impl;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import vn.naitei.nhom3.expensemanagement.dto.report.ReportPeriodAmount;
-import vn.naitei.nhom3.expensemanagement.dto.report.ReportTrendPoint;
-import vn.naitei.nhom3.expensemanagement.exception.BadRequestException;
-import vn.naitei.nhom3.expensemanagement.repository.ExpenseRepository;
-import vn.naitei.nhom3.expensemanagement.repository.IncomeRepository;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import vn.naitei.nhom3.expensemanagement.dto.report.ReportPeriodAmount;
+import vn.naitei.nhom3.expensemanagement.dto.report.ReportTrendPoint;
+import vn.naitei.nhom3.expensemanagement.exception.BadRequestException;
+import vn.naitei.nhom3.expensemanagement.repository.ExpenseRepository;
+import vn.naitei.nhom3.expensemanagement.repository.IncomeRepository;
 
 @ExtendWith(MockitoExtension.class)
 class ReportComparisonTrendServiceTest {
