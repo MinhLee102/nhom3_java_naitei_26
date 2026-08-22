@@ -9,26 +9,41 @@ import type { ApiResponse } from "@/types/api";
  * - Lỗi 401 được xử lý thống nhất
  */
 const apiClient = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  baseURL: process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_BASE_URL,
   headers: {
     "Content-Type": "application/json",
   },
   timeout: 15000,
 });
 
+function getStoredAccessToken(): string | null {
+  if (typeof window === "undefined") {
+    return null;
+  }
+
+  const localToken = localStorage.getItem("access_token") || localStorage.getItem("token");
+  if (localToken) {
+    return localToken;
+  }
+
+  const cookieMatch = document.cookie.match(/(?:^|;\s*)access_token=([^;]+)/);
+  if (cookieMatch) {
+    return decodeURIComponent(cookieMatch[1]);
+  }
+
+  return null;
+}
+
 /**
  * Request Interceptor:
- * Tự động gắn Bearer token từ localStorage vào mọi request.
+ * Tự động gắn Bearer token từ localStorage/cookie vào mọi request.
  * Token được lưu khi user login thành công.
  */
 apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    // Chỉ truy cập localStorage ở client-side
-    if (typeof window !== "undefined") {
-      const token = localStorage.getItem("access_token");
-      if (token && config.headers) {
-        config.headers.Authorization = `Bearer ${token}`;
-      }
+    const token = getStoredAccessToken();
+    if (token && config.headers) {
+      config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },

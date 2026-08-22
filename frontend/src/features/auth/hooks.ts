@@ -9,11 +9,27 @@ export function useLogin() {
   return useMutation({
     mutationFn: (data: LoginRequest) => authApi.login(data),
     onSuccess: (response) => {
-      const { accessToken, user } = response.data as unknown as {
-        accessToken: string;
+      const payload = response.data as {
+        token?: string;
+        accessToken?: string;
+        refreshToken?: string;
         user: { id: string; email: string; name: string; role: "USER" | "ADMIN" };
       };
-      setAuth(user, accessToken);
+
+      const authToken = payload.token ?? payload.accessToken;
+      if (!authToken) {
+        throw new Error("Authentication response is missing the access token.");
+      }
+
+      if (typeof document !== "undefined") {
+        document.cookie = `access_token=${authToken}; path=/; max-age=86400; SameSite=Lax`;
+      }
+
+      if (payload.refreshToken) {
+        localStorage.setItem("refresh_token", payload.refreshToken);
+      }
+
+      setAuth(payload.user, authToken);
     },
   });
 }
