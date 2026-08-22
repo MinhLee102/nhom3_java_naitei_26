@@ -4,10 +4,11 @@ import type { CreateUserDto, UpdateUserDto } from "./types";
 
 const QUERY_KEY = "users";
 
-export function useUsers(filter?: Record<string, unknown>) {
+export function useUsers(filter?: Record<string, unknown>, enabled = false) {
   return useQuery({
     queryKey: [QUERY_KEY, filter],
     queryFn: () => userApi.getAll(filter).then((res) => res.data),
+    enabled,
   });
 }
 
