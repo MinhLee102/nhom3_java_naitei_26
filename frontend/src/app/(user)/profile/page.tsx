@@ -93,16 +93,18 @@ export default function ProfilePage() {
     setLoadingProfile(true);
 
     try {
-      const updatedUser = { ...storedUser, name };
+      const res = await apiClient.put("/profile", { name });
+      const updatedUser = res.data.data;
+
+      // Đồng bộ lại dữ liệu vào localStorage
       localStorage.setItem("user", JSON.stringify(updatedUser));
-      // Bắn event để hook useSyncExternalStore tự động cập nhật lại toàn UI
       window.dispatchEvent(new Event("storage"));
 
-      setMessage({ type: "success", text: "Profile updated successfully!" });
+      setMessage({ type: "success", text: "Cập nhật hồ sơ thành công!" });
     } catch (err: unknown) {
       setMessage({
         type: "error",
-        text: (err as Error).message || "Failed to update profile.",
+        text: (err as Error).message || "Không thể cập nhật hồ sơ lúc này.",
       });
     } finally {
       setLoadingProfile(false);
