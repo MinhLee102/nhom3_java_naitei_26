@@ -14,7 +14,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import vn.naitei.nhom3.expensemanagement.dto.report.ReportPeriodAmount;
 import vn.naitei.nhom3.expensemanagement.dto.report.ReportTrendPoint;
 import vn.naitei.nhom3.expensemanagement.exception.BadRequestException;
 import vn.naitei.nhom3.expensemanagement.repository.ExpenseRepository;
@@ -55,9 +54,9 @@ class ReportComparisonTrendServiceTest {
         LocalDate from = LocalDate.of(2026, 1, 15);
         LocalDate to = LocalDate.of(2026, 3, 2);
         when(incomeRepository.sumMonthlyAmountByUserIdAndIncomeDateBetween(7L, from, to))
-                .thenReturn(List.of(new ReportPeriodAmount(2026, 1, new BigDecimal("1000000"))));
+                .thenReturn(List.<Object[]>of(new Object[] { 2026, 1, new BigDecimal("1000000") }));
         when(expenseRepository.sumMonthlyAmountByUserIdAndExpenseDateBetween(7L, from, to))
-                .thenReturn(List.of(new ReportPeriodAmount(2026, 3, new BigDecimal("250000"))));
+                .thenReturn(List.<Object[]>of(new Object[] { 2026, 3, new BigDecimal("250000") }));
 
         List<ReportTrendPoint> result = reportService.getTrend(7L, from, to);
 
@@ -72,9 +71,9 @@ class ReportComparisonTrendServiceTest {
                 LocalDate from = LocalDate.of(2026, 11, 15);
                 LocalDate to = LocalDate.of(2027, 2, 2);
                 when(incomeRepository.sumMonthlyAmountByUserIdAndIncomeDateBetween(7L, from, to))
-                                .thenReturn(List.of(new ReportPeriodAmount(2027, 1, new BigDecimal("500"))));
+                                .thenReturn(List.<Object[]>of(new Object[] { 2027, 1, new BigDecimal("500") }));
                 when(expenseRepository.sumMonthlyAmountByUserIdAndExpenseDateBetween(7L, from, to))
-                                .thenReturn(List.of(new ReportPeriodAmount(2026, 12, new BigDecimal("200"))));
+                                .thenReturn(List.<Object[]>of(new Object[] { 2026, 12, new BigDecimal("200") }));
 
                 List<ReportTrendPoint> result = reportService.getTrend(7L, from, to);
 

@@ -8,7 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import vn.naitei.nhom3.expensemanagement.dto.report.ReportPeriodAmount;
 import vn.naitei.nhom3.expensemanagement.entity.Income;
 
 public interface IncomeRepository extends JpaRepository<Income, Long> {
@@ -34,15 +33,14 @@ public interface IncomeRepository extends JpaRepository<Income, Long> {
     BigDecimal sumAmountByUserId(@Param("userId") Long userId);
 
     @Query("""
-        SELECT new vn.naitei.nhom3.expensemanagement.dto.report.ReportPeriodAmount(
-            FUNCTION('YEAR', i.incomeDate), FUNCTION('MONTH', i.incomeDate), SUM(i.amount))
+        SELECT FUNCTION('YEAR', i.incomeDate), FUNCTION('MONTH', i.incomeDate), SUM(i.amount)
         FROM Income i
         WHERE i.user.id = :userId
           AND i.incomeDate BETWEEN :from AND :to
         GROUP BY FUNCTION('YEAR', i.incomeDate), FUNCTION('MONTH', i.incomeDate)
         ORDER BY FUNCTION('YEAR', i.incomeDate), FUNCTION('MONTH', i.incomeDate)
         """)
-    List<ReportPeriodAmount> sumMonthlyAmountByUserIdAndIncomeDateBetween(
+    List<Object[]> sumMonthlyAmountByUserIdAndIncomeDateBetween(
         @Param("userId") Long userId,
         @Param("from") LocalDate from,
         @Param("to") LocalDate to);

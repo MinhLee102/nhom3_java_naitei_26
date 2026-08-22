@@ -10,7 +10,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import vn.naitei.nhom3.expensemanagement.dto.report.ReportCategoryResponse;
-import vn.naitei.nhom3.expensemanagement.dto.report.ReportPeriodAmount;
 import vn.naitei.nhom3.expensemanagement.entity.Expense;
 
 public interface ExpenseRepository extends JpaRepository<Expense, Long>, JpaSpecificationExecutor<Expense> {
@@ -58,15 +57,14 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long>, JpaSpec
             @Param("end") LocalDate end);
 
     @Query("""
-        SELECT new vn.naitei.nhom3.expensemanagement.dto.report.ReportPeriodAmount(
-            FUNCTION('YEAR', e.expenseDate), FUNCTION('MONTH', e.expenseDate), SUM(e.amount))
+        SELECT FUNCTION('YEAR', e.expenseDate), FUNCTION('MONTH', e.expenseDate), SUM(e.amount)
         FROM Expense e
         WHERE e.user.id = :userId
           AND e.expenseDate BETWEEN :from AND :to
         GROUP BY FUNCTION('YEAR', e.expenseDate), FUNCTION('MONTH', e.expenseDate)
         ORDER BY FUNCTION('YEAR', e.expenseDate), FUNCTION('MONTH', e.expenseDate)
         """)
-    List<ReportPeriodAmount> sumMonthlyAmountByUserIdAndExpenseDateBetween(
+    List<Object[]> sumMonthlyAmountByUserIdAndExpenseDateBetween(
             @Param("userId") Long userId,
             @Param("from") LocalDate from,
             @Param("to") LocalDate to);

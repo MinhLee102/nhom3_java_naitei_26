@@ -94,9 +94,13 @@ public class ReportServiceImpl implements ReportService {
         return amount == null ? BigDecimal.ZERO : amount;
     }
 
-    private Map<YearMonth, BigDecimal> toMonthlyAmounts(List<ReportPeriodAmount> amounts) {
+    private Map<YearMonth, BigDecimal> toMonthlyAmounts(List<Object[]> rows) {
         Map<YearMonth, BigDecimal> result = new HashMap<>();
-        for (ReportPeriodAmount amount : amounts) {
+        for (Object[] row : rows) {
+            ReportPeriodAmount amount = new ReportPeriodAmount(
+                    ((Number) row[0]).intValue(),
+                    ((Number) row[1]).intValue(),
+                    (BigDecimal) row[2]);
             result.put(YearMonth.of(amount.getYear(), amount.getMonth()), zeroIfNull(amount.getAmount()));
         }
         return result;

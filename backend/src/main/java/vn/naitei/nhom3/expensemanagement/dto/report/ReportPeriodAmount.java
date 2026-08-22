@@ -17,4 +17,5 @@ public class ReportPeriodAmount {
         this.month = month;
         this.amount = amount;
     }
+
 }
