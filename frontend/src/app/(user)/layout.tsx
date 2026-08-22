@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Header, Sidebar, Footer } from "@/components/layout";
+import { Sidebar, Footer } from "@/components/layout";
+import { Menu } from "lucide-react";
 
 /**
  * User Layout — dùng cho khu vực client (người dùng cuối).
@@ -19,19 +20,29 @@ export default function UserLayout({
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Header onMenuToggle={() => setSidebarOpen(!sidebarOpen)} />
+    <div className="min-h-screen bg-slate-50/70 font-sans">
+      {/* Header thu nhỏ chỉ hiển thị trên Mobile */}
+      <div className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-slate-200 bg-white px-4 lg:hidden">
+        <div className="flex items-center gap-2 font-bold text-blue-700">
+          FinTrack Pro
+        </div>
+        <button
+          onClick={() => setSidebarOpen(true)}
+          className="rounded-lg p-2 text-slate-600 hover:bg-slate-100"
+        >
+          <Menu className="h-5 w-5" />
+        </button>
+      </div>
+
+      {/* Sidebar */}
       <Sidebar
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
       />
 
-      {/* Main content — offset bởi sidebar width trên desktop */}
-      <main className="lg:ml-64 min-h-[calc(100vh-4rem-3.5rem)]">
-        <div className="p-4 lg:p-6">{children}</div>
-      </main>
-
-      <div className="lg:ml-64">
+      {/* Khu vực nội dung chính */}
+      <div className="flex min-h-screen flex-col lg:pl-64">
+        <main className="flex-1 p-4 lg:p-8">{children}</main>
         <Footer />
       </div>
     </div>
