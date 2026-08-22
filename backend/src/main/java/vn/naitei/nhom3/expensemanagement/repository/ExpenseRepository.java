@@ -55,4 +55,25 @@ public interface ExpenseRepository extends JpaRepository<Expense, Long>, JpaSpec
             @Param("categoryId") Long categoryId,
             @Param("start") LocalDate start,
             @Param("end") LocalDate end);
+
+    @Query("""
+        SELECT FUNCTION('YEAR', e.expenseDate), FUNCTION('MONTH', e.expenseDate), SUM(e.amount)
+        FROM Expense e
+        WHERE e.user.id = :userId
+          AND e.expenseDate BETWEEN :from AND :to
+        GROUP BY FUNCTION('YEAR', e.expenseDate), FUNCTION('MONTH', e.expenseDate)
+        ORDER BY FUNCTION('YEAR', e.expenseDate), FUNCTION('MONTH', e.expenseDate)
+        """)
+    List<Object[]> sumMonthlyAmountByUserIdAndExpenseDateBetween(
+            @Param("userId") Long userId,
+            @Param("from") LocalDate from,
+            @Param("to") LocalDate to);
+
+    // ==================== PROJECTIONS ====================
+    interface CategoryExpenseSummaryProjection {
+        Long getCategoryId();
+        String getCategoryName();
+        String getCategoryIcon();
+        BigDecimal getTotalAmount();
+    }
 }

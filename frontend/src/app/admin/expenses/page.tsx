@@ -41,7 +41,9 @@ export default function AdminExpensesPage() {
     isValid
   );
   const categoriesQuery = useExpenseCategories();
-  const usersQuery = useUsers({ page: 0, size: 100 });
+  const usersQuery = useUsers({ page: 0, size: 100 }, false);
+  const categoryOptions = Array.isArray(categoriesQuery.data) ? categoriesQuery.data : [];
+  const userOptions = Array.isArray(usersQuery.data?.content) ? usersQuery.data.content : [];
 
   const changeFilter = (field: keyof AdminExpenseFilterValues, value: string) => {
     setFilters((current) => ({ ...current, [field]: value }));
@@ -95,7 +97,7 @@ export default function AdminExpensesPage() {
             onChange={(event) => changeFilter("userId", event.target.value)}
             options={[
               { label: "Tất cả người dùng", value: "" },
-              ...(usersQuery.data?.content ?? []).map((user) => ({
+              ...userOptions.map((user) => ({
                 label: `${user.name} (${user.email})`,
                 value: user.id,
               })),
@@ -108,7 +110,7 @@ export default function AdminExpensesPage() {
             onChange={(event) => changeFilter("categoryId", event.target.value)}
             options={[
               { label: "Tất cả danh mục", value: "" },
-              ...(categoriesQuery.data ?? []).map((category) => ({
+              ...categoryOptions.map((category) => ({
                 label: category.name,
                 value: String(category.id),
               })),

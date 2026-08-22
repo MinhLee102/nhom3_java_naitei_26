@@ -35,6 +35,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     if (typeof window !== "undefined") {
       localStorage.setItem("access_token", token);
       localStorage.setItem("user", JSON.stringify(user));
+      document.cookie = `access_token=${token}; path=/; max-age=86400; SameSite=Lax`;
     }
     set({ user, token, isAuthenticated: true });
   },
@@ -46,6 +47,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     if (typeof window !== "undefined") {
       localStorage.removeItem("access_token");
       localStorage.removeItem("user");
+      document.cookie = "access_token=; path=/; max-age=0; SameSite=Lax";
     }
     set({ user: null, token: null, isAuthenticated: false });
   },
